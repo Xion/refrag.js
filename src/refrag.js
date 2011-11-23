@@ -4,7 +4,7 @@
  * @author Karol Kuczmarski
  */
 
-// libs: jQuip with documentReady
+// libs: jQuery or jQuip with documentReady
 
 
 (function($) {
@@ -17,16 +17,37 @@
  
     console.log("[refrag.js] Anchor " + anchor + " found, will redirect...");
     
-    $.ready(function() {
+    $(function() {
         console.log("[refrag.js] Redirecting...");
         anchor = unescape(anchor);
         
-        var docElems = [];
+        // TODO: the recursive call could be done better
         var docText = "";
-        $(document).contents().each(function() {
+        var found = false;
+        var domWalker = function() {
+            if (found)  return false;
             var $this = $(this);
-            console.log($this.name);
-        });
+            
+            var prevDocText = docText;
+            var text = $this.text();
+            docText += text;
+            
+            if (docText.indexOf(anchor) >= 0) {
+                console.log("[refrag.js] Matched element found: <" +
+                            ($this.get(0).nodeName || "(text)") + ">");
+                found = true;
+                
+                $this.css('color', 'red');  // temporary, of course
+                $(document).scrollTop($this.scrollTop());
+                return false;
+            }
+            
+            docText += text;
+            $this.contents().each(domWalker);
+            docText = prevDocText;
+        };
+        
+        $('body').contents().each(domWalker);
     });
     
 })(jQuery);
