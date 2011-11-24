@@ -18,36 +18,42 @@
     console.log("[refrag.js] Anchor " + anchor + " found, will redirect...");
     
     $(function() {
-        console.log("[refrag.js] Redirecting...");
+        console.log("[refrag.js] Attempting to redirect...");
         anchor = unescape(anchor);
-        
-        // TODO: the recursive call could be done better
-        var docText = "";
-        var found = false;
-        var domWalker = function() {
-            if (found)  return false;
-            var $this = $(this);
-            
-            var prevDocText = docText;
-            var text = $this.text();
-            docText += text;
-            
-            if (docText.indexOf(anchor) >= 0) {
-                console.log("[refrag.js] Matched element found: <" +
-                            ($this.get(0).nodeName || "(text)") + ">");
-                found = true;
-                
-                $this.css('color', 'red');  // temporary, of course
-                $(document).scrollTop($this.scrollTop());
-                return false;
-            }
-            
-            docText += text;
-            $this.contents().each(domWalker);
-            docText = prevDocText;
-        };
-        
-        $('body').contents().each(domWalker);
+
+        var $anchorMatch = (function() {
+            var $match = null;
+            var domWalker = function(currentDocText) {
+                currentDocText = currentDocText || "";
+                return function() {
+                    if ($match) return false;
+
+                    var $this = $(this);
+                    var text = $this.text();
+                    var docText = currentDocText + text;
+
+                    if (docText.indexOf(anchor) >= 0) {
+                        $match = $this;
+                        return false;
+                    }
+
+                    $this.contents().each(domWalker(docText));
+                };
+             };
+
+             $('body').contents().each(domWalker());
+             return $match;
+        })();
+
+        if ($anchorMatch) {
+            console.log("[refrag.js] Matched element <" + $anchorMatch.prop('nodeName') + ">");
+            $(document).scrollTop($anchorMatch.scrollTop());
+            $anchorMatch.css('color', 'red'); // temporary, of course
+        }
+        else {
+            console.log("[refrag.js] No element matching anchor: " + anchor);
+        }
+
     });
-    
+        
 })(jQuery);
