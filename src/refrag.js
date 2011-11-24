@@ -48,7 +48,7 @@
 
     /** Searching for text within HTML document **/
 
-    var searchText = function(textToFind, $root) {
+    var searchText = function(text, $root) {
         /** Matches the given text, returning
             the innermost DOM element that contains it. */
         var $match = null;
@@ -58,10 +58,10 @@
                 if ($match) return false;
 
                 var $this = $(this);
-                var text = $this.text();
-                var newDocText = docText + text;
+                var elemText = $this.text();
+                var newDocText = docText + elemText;
 
-                if (newDocText.indexOf(textToFind) >= 0) {
+                if (newDocText.indexOf(text) >= 0) {
                     $match = $this;
                     return false;
                 }
