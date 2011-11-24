@@ -38,7 +38,8 @@
         var $anchorMatch = matchAnchor(anchor);
         if ($anchorMatch) {
             log("Matched element <" + $anchorMatch.prop('nodeName') + ">");
-            $(document).scrollTop($anchorMatch.scrollTop());
+            var matchY = $anchorMatch.offset().top;
+            $(document).scrollTop(matchY);
             $anchorMatch.css('color', 'red'); // temporary, of course
         }
         else {
@@ -48,30 +49,40 @@
 
     /** Utility functions **/
 
-    var matchAnchor = function(anchor) {
+    var matchAnchor = function(anchor, $root) {
         /** Matches the anchor text, returning
             the innermost DOM element that contains it. */
         var $match = null;
-        var domWalker = function(currentDocText) {
-            currentDocText = currentDocText || "";
+        var domWalker = function(docText) {
+            docText = docText || "";
             return function() {
                 if ($match) return false;
 
                 var $this = $(this);
                 var text = $this.text();
-                var docText = currentDocText + text;
+                var newDocText = docText + text;
 
-                if (docText.indexOf(anchor) >= 0) {
+                if (newDocText.indexOf(anchor) >= 0) {
                     $match = $this;
                     return false;
                 }
 
-                $this.contents().each(domWalker(docText));
+                $this.contents().each(domWalker(newDocText));
             };
-         };
+        };
 
-         $('body').contents().each(domWalker());
-         return $match;
-    };
+        $root = $root || $('body');
+        $root.contents().each(domWalker());
         
+        if (!$match)    return null;
+        return matchAnchor(anchor, $match) || $match;
+    };
+
+    // seems to be the same as matchAnchor(), but uses jQuery selector (could be used for testing maybe?)
+    var _jqMatchAnchor = function(anchor) {
+        var selector = '*:contains(\'' + anchor + '\'):last';
+        var $match = $(selector);
+        return $match.length > 0 ? $match : null;
+    };
+
 })(jQuery);
