@@ -37,17 +37,16 @@
 
         var $anchorMatch = matchAnchor(anchor);
         if ($anchorMatch) {
-            log("Matched element <" + $anchorMatch.prop('nodeName') + ">");
-            var matchY = $anchorMatch.offset().top;
-            $(document).scrollTop(matchY);
-            $anchorMatch.css('color', 'red'); // temporary, of course
+            log("Matched element <" + $anchorMatch.get(0).nodeName + ">");
+            scrollToElement($anchorMatch);
+            highlightElement($anchorMatch);
         }
         else {
             log('warn', "No element matching anchor: " + anchor);
         }
     });
 
-    /** Utility functions **/
+    /** Searching for anchor text within HTML document **/
 
     var matchAnchor = function(anchor, $root) {
         /** Matches the anchor text, returning
@@ -83,6 +82,23 @@
         var selector = '*:contains(\'' + anchor + '\'):last';
         var $match = $(selector);
         return $match.length > 0 ? $match : null;
+    };
+
+    /** User innteraction **/
+
+    var scrollToElement = function($elem) {
+        var elemY = $elem.offset().top;
+        $(document).scrollTop(elemY);
+    };
+
+    var highlightElement = function($elem) {
+        var isText = $elem.get(0).nodeName === '#text';
+        if (isText) {
+            var $span = $('<span/>').text($elem.text());
+            $elem.replaceWith($span);
+            $elem = $span;
+        }
+        $elem.css('background-color', 'yellow');
     };
 
 })(jQuery);
