@@ -35,7 +35,7 @@
         log("Attempting to redirect...");
         anchor = unescape(anchor);
 
-        var $anchorMatch = matchAnchor(anchor);
+        var $anchorMatch = searchText(anchor);
         if ($anchorMatch) {
             log("Matched element <" + $anchorMatch.get(0).nodeName + ">");
             scrollToElement($anchorMatch);
@@ -46,10 +46,10 @@
         }
     });
 
-    /** Searching for anchor text within HTML document **/
+    /** Searching for text within HTML document **/
 
-    var matchAnchor = function(anchor, $root) {
-        /** Matches the anchor text, returning
+    var searchText = function(textToFind, $root) {
+        /** Matches the given text, returning
             the innermost DOM element that contains it. */
         var $match = null;
         var domWalker = function(docText) {
@@ -61,7 +61,7 @@
                 var text = $this.text();
                 var newDocText = docText + text;
 
-                if (newDocText.indexOf(anchor) >= 0) {
+                if (newDocText.indexOf(textToFind) >= 0) {
                     $match = $this;
                     return false;
                 }
@@ -74,10 +74,10 @@
         $root.contents().each(domWalker());
         
         if (!$match)    return null;
-        return matchAnchor(anchor, $match) || $match;
+        return searchText(textToFind, $match) || $match;
     };
 
-    // seems to be the same as matchAnchor(), but uses jQuery selector (could be used for testing maybe?)
+    // seems to be the same as searchText(), but uses jQuery selector (could be used for testing maybe?)
     var _jqMatchAnchor = function(anchor) {
         var selector = '*:contains(\'' + anchor + '\'):last';
         var $match = $(selector);
@@ -87,8 +87,17 @@
     /** User innteraction **/
 
     var scrollToElement = function($elem) {
-        var elemY = $elem.offset().top;
-        $(document).scrollTop(elemY);
+        // correcting for cases where offset().top returns 0 even though it shouldn't
+        // (e.g.: text DOM nodes)
+        var top = $elem.offset().top, parentTop;
+        var $parent = $elem.parent();
+        while ((parentTop = $parent.offset().top) >= top) {
+            top = parentTop;
+            $elem = $parent;
+            $parent = $elem.parent();
+        }
+
+        $(window).scrollTop(top);
     };
 
     var highlightElement = function($elem) {
