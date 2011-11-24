@@ -1,6 +1,6 @@
 /**
  * refrag.js
- * Enables linking to arbitrary page fragments
+ * Enables linking to arbitrary content on page
  * @author Karol Kuczmarski
  */
 
@@ -84,7 +84,7 @@
         return $match.length > 0 ? $match : null;
     };
 
-    /** User innteraction **/
+    /** User interaction **/
 
     var scrollToElement = function($elem) {
         // correcting for cases where offset().top returns 0 even though it shouldn't
