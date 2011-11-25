@@ -80,7 +80,7 @@
     var highlightElement = function($elem) {
         if ($elem.isText()) {
             var $span = $('<span/>').html($elem.text());
-            $elem.replaceWith($span);   // this is probably complex to implement...
+            $elem.replaceWith($span);
             $elem = $span;
         }
         $elem.css('background-color', 'yellow');
