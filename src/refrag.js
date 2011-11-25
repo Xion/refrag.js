@@ -4,8 +4,6 @@
  * @author Karol Kuczmarski
  */
 
-// libs: jQuery or jQuip with documentReady
-
 
 (function($) {
     
@@ -21,7 +19,7 @@
         }
         console[type]("[refrag.js] " + message);
     };
-    
+
     /** Code invoked on page load **/
 
     var hashPrefix = '#' + PREFIX;
@@ -37,7 +35,7 @@
 
         var $anchorMatch = searchText(anchor);
         if ($anchorMatch) {
-            log("Matched element <" + $anchorMatch.get(0).nodeName + ">");
+            log("Matched element <" + $anchorMatch.nodeName + ">");
             scrollToElement($anchorMatch);
             highlightElement($anchorMatch);
         }
@@ -66,12 +64,12 @@
                     return false;
                 }
 
-                $this.contents().each(domWalker(newDocText));
+                $.each($this.contents(), domWalker(newDocText));
             };
         };
 
         $root = $root || $('body');
-        $root.contents().each(domWalker());
+        $.each($root.contents(), domWalker());
         
         if (!$match)    return null;
         return searchText(textToFind, $match) || $match;
@@ -109,41 +107,85 @@
         $elem.css('background-color', 'yellow');
     };
 
+})(
+
     /** Our own little jQuery **/
 
-    // This our own implementation of something that resembles jQuery,
-    // but provides only extremely basic functionality. Most notably,
-    // $('selector') returns only first match as normal DOM object,
-    // and works only as delegate to getElementsById/querySelector.
-    var $ = function(arg) {
+    // This our own implementation of something that resembles jQuery, but provides only
+    // extremely basic functionality. Most notably, $('selector') returns only first match
+    // as (almost) normal DOM object, and works only as delegate to getElementsById/querySelector.
+    (function() {
+        var $ = function(arg) {
         
-        var queryDom = function(selector) {
-            selector = selector.trim();
-            if (selector.length == 0)   return null;
+            var queryDom = function(selector) {
+                selector = selector.trim();
+                if (selector.length == 0)   return null;
 
-            if (selector[0] == '#') {
-                var elemId = selector.substring(1);
-                var elems = document.getElementsById(elemId);
-                if (!elems || elems.length == 0)    return null;
-                return elems[0];
-            }
-            if (document.querySelector)
-                return document.querySelector(selector);
+                var result = null;
+                if (selector[0] == '#') {
+                    var elemId = selector.substring(1);
+                    var elems = document.getElementsById(elemId);
+                    if (!elems || elems.length == 0)    return null;
+                    return wrapDomElement(elems[0]);
+                }
+                if (document.querySelector)
+                    return wrapDomElement(document.querySelector(selector));
 
-            return null;
+                return null;
+            };
+            var addReadyHandler = function(func) {
+                if (window.addEventListener)
+                    return window.addEventListener('onload', func);
+                else {
+                    window.onload = func;
+                    return true;
+                }
+            };
+            var wrapDomElement = function(elem) {
+                // add functions from $.fn
+                for (var key in $.fn) {
+                    if ($.fn.hasOwnProperty(key) && !elem[key]) {
+                        var func = $.fn[key];
+                        elem[key] = func;
+                    }
+                }
+            };
+
+            if (typeof arg === 'string')    return queryDom(arg);
+            if (typeof arg == 'function')   return addReadyHandler(arg);
+            return wrapDomElement(arg);
         };
-        var addReadyHandler = function(func) {
-            if (window.addEventListener)
-                return window.addEventListener('onload', func);
-            else {
-                window.onload = func;
-                return true;
+
+        $.fn = (function() {
+            // additional functions, bound to objects returned by $()
+            
+            return {
+                html: function() { return this.innerHTML; },
+
+                text: function() {
+                    var res = "";
+                    var children = 
+                    $.each(this.childNodes, function() {
+                        var isText = this.nodeName === '#text';
+                        res += isText ? this.nodeText : $(this).text();
+                    });
+                    return res;
+                },
+
+                contents: function() { return this.childNodes },
+            };
+        })();
+
+        $.each = function(seq, func) {
+            for (var idx in seq) {
+                if (seq.hasOwnProperty(idx)) {
+                    var elem = seq[idx];
+                    var shallContinue = func.apply(elem, [idx, elem, seq]);
+                    if (!shallContinue) break;
+                }
             }
         };
 
-        if (typeof arg === 'string')    return queryDom(arg);
-        if (typeof arg == 'function')   return addReadyHandler(arg);
-        return arg;
-    };
-
-})(jQuery);
+        return $;
+    });
+);
