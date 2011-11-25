@@ -87,14 +87,13 @@
     /** User interaction **/
 
     var scrollToElement = function($elem) {
-        // correcting for cases where offset().top returns 0 even though it shouldn't
-        // (e.g.: text DOM nodes)
+        // correcting for cases where $elem.offset().top returns 0
+        //even though it shouldn't (e.g.: text DOM nodes)
         var top = $elem.offset().top, parentTop;
-        var $parent = $elem.parent();
-        while ((parentTop = $parent.offset().top) >= top) {
+        $elem = $elem.parent();
+        while ((parentTop = $elem.offset().top) >= top) {
             top = parentTop;
-            $elem = $parent;
-            $parent = $elem.parent();
+            $elem = $elem.parent();
         }
 
         $(window).scrollTop(top);
@@ -108,6 +107,43 @@
             $elem = $span;
         }
         $elem.css('background-color', 'yellow');
+    };
+
+    /** Our own little jQuery **/
+
+    // This our own implementation of something that resembles jQuery,
+    // but provides only extremely basic functionality. Most notably,
+    // $('selector') returns only first match as normal DOM object,
+    // and works only as delegate to getElementsById/querySelector.
+    var $ = function(arg) {
+        
+        var queryDom = function(selector) {
+            selector = selector.trim();
+            if (selector.length == 0)   return null;
+
+            if (selector[0] == '#') {
+                var elemId = selector.substring(1);
+                var elems = document.getElementsById(elemId);
+                if (!elems || elems.length == 0)    return null;
+                return elems[0];
+            }
+            if (document.querySelector)
+                return document.querySelector(selector);
+
+            return null;
+        };
+        var addReadyHandler = function(func) {
+            if (window.addEventListener)
+                return window.addEventListener('onload', func);
+            else {
+                window.onload = func;
+                return true;
+            }
+        };
+
+        if (typeof arg === 'string')    return queryDom(arg);
+        if (typeof arg == 'function')   return addReadyHandler(arg);
+        return arg;
     };
 
 })(jQuery);
