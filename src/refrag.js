@@ -77,26 +77,12 @@
 
     /** User interaction **/
 
-    var scrollToElement = function($elem) {
-        // correcting for cases where $elem.offset().top returns 0
-        // even though it shouldn't (e.g.: text DOM nodes)
-        var top = $elem.offset().top, parentTop;
-        $elem = $elem.parent();
-        while ((parentTop = $elem.offset().top) >= top) {
-            top = parentTop;
-            $elem = $elem.parent();
-        }
-
-        $(window).scrollTop(top);
-    };
-
     var highlightElement = function($elem) {
-        var isText = $elem.nodeName === '#text';
-        // if (isText) {
-        //     var $span = $('<span/>').html($elem.text());
-        //     $elem.replaceWith($span);   // this is probably complex to implement...
-        //     $elem = $span;
-        // }
+        if ($elem.isText()) {
+            var $span = $('<span/>').html($elem.text());
+            $elem.replaceWith($span);   // this is probably complex to implement...
+            $elem = $span;
+        }
         $elem.css('background-color', 'yellow');
     };
 
@@ -125,7 +111,7 @@
                 return null;
             };
             var createDom = function(desc) {
-                desc = desc.substring(1, desc.length - 2);
+                desc = desc.substring(1, desc.length - 1);
                 if (desc[desc.length - 1] == '/')
                     desc = desc.substring(0, desc.length - 1);
 
@@ -167,14 +153,27 @@
 
         $.fn = (function() {
             // additional functions, bound to objects returned by $()
+
+            var cssStyleToCamelCase = function(style) {
+                /** Utility functions used by .css(). */
+                var styleNameParts = style.split('-');
+                for (var i = 0; i < styleNameParts.length; ++i) {
+                    var firstLetter = styleNameParts[i].substring(0, 1)
+                    firstLetter = firstLetter[i > 0 ? 'toUpperCase' : 'toLowerCase']();
+                    styleNameParts[i] = firstLetter + styleNameParts[i].substring(1);
+                }
+                return styleNameParts.join('');
+            };
             
             return {
                 isText: function() { return this.nodeType == 3; },
                 contents: function() { return this.childNodes },
 
                 html: function(arg) {
-                    if (typeof arg !== 'undefined')
+                    if (typeof arg !== 'undefined') {
                         this.innerHTML = arg;
+                        return this;
+                    }
                     return this.innerHTML;
                 },
 
@@ -190,8 +189,11 @@
                 },
 
                 css: function(style, value) {
-                    if (typeof value !== 'undefined')
+                    style = cssStyleToCamelCase(style);
+                    if (typeof value !== 'undefined') {
                         this.style[style] = value;
+                        return this;
+                    }
                     return this.style[style];
                 },
 
@@ -215,6 +217,12 @@
                         obj = obj.previousSibling;
                     obj = obj || this.parentNode;
                     if (obj)    $(obj).scrollIntoView(how);
+                },
+
+                replaceWith: function(node) {
+                    var parent = this.parentNode;
+                    parent.insertBefore(node, this);
+                    parent.removeChild(this);
                 },
             };
         })();
