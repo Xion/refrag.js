@@ -91,10 +91,10 @@
     };
 
     var highlightElement = function($elem) {
-        var isText = $elem.get(0).nodeName === '#text';
+        var isText = $elem.nodeName === '#text';
         if (isText) {
-            var $span = $('<span/>').text($elem.text());
-            $elem.replaceWith($span);
+            var $span = $('<span/>').html($elem.text());
+            $elem.replaceWith($span);   // this is probably complex to implement...
             $elem = $span;
         }
         $elem.css('background-color', 'yellow');
@@ -168,7 +168,11 @@
             // additional functions, bound to objects returned by $()
             
             return {
-                html: function() { return this.innerHTML; },
+                html: function(arg) {
+                    if (typeof arg !== 'undefined')
+                        this.innerHTML = arg;
+                    return this.innerHTML;
+                },
 
                 text: function() {
                     var res = "";
@@ -192,6 +196,12 @@
                         } while ( (obj = obj.offsetParent) );
                     }
                     return {left: left, top: top};
+                },
+
+                css: function(style, value) {
+                    if (typeof value !== 'undefined')
+                        this.style[style] = value;
+                    return this.style[style];
                 },
             };
         })();
