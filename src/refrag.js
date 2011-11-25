@@ -75,13 +75,6 @@
         return searchText(textToFind, $match) || $match;
     };
 
-    // seems to be the same as searchText(), but uses jQuery selector (could be used for testing maybe?)
-    var _jqMatchAnchor = function(anchor) {
-        var selector = '*:contains(\'' + anchor + '\'):last';
-        var $match = $(selector);
-        return $match.length > 0 ? $match : null;
-    };
-
     /** User interaction **/
 
     var scrollToElement = function($elem) {
@@ -114,33 +107,32 @@
     // This our own implementation of something that resembles jQuery, but provides only
     // extremely basic functionality. Most notably, $('selector') returns only first match
     // as (almost) normal DOM object, and works only as delegate to getElementsById/querySelector.
+    // That is, a $('foo') object is **NOT** an array!
     (function() {
         var $ = function(arg) {
         
             var queryDom = function(selector) {
-                selector = selector.trim();
-                if (selector.length == 0)   return null;
-
-                var result = null;
                 if (selector[0] == '#') {
                     var elemId = selector.substring(1);
                     var elems = document.getElementsById(elemId);
                     if (!elems || elems.length == 0)    return null;
                     return wrapDomElement(elems[0]);
                 }
+
                 if (document.querySelector)
                     return wrapDomElement(document.querySelector(selector));
 
                 return null;
             };
-            var addReadyHandler = function(func) {
-                if (window.addEventListener)
-                    return window.addEventListener('onload', func);
-                else {
-                    window.onload = func;
-                    return true;
-                }
+            var createDom = function(desc) {
+                desc = desc.substring(1, desc.length - 2);
+                if (desc[desc.length - 1] == '/')
+                    desc = desc.substring(0, desc.length - 1);
+
+                var elem = document.createElement(desc);
+                return wrapDomElement(elem);
             };
+
             var wrapDomElement = function(elem) {
                 // add functions from $.fn
                 for (var key in $.fn) {
@@ -151,8 +143,24 @@
                 }
             };
 
-            if (typeof arg === 'string')    return queryDom(arg);
-            if (typeof arg == 'function')   return addReadyHandler(arg);
+            var addReadyHandler = function(func) {
+                if (window.addEventListener)
+                    return window.addEventListener('onload', func);
+                else {
+                    window.onload = func;
+                    return true;
+                }
+            };
+
+            if (typeof arg === 'string') {
+                arg = arg.trim();
+                if (arg[0] == '<' && arg[arg.length - 1] == '>')
+                    return createDom(arg);
+                return queryDom(arg);
+            }
+            if (typeof arg == 'function') {
+                return addReadyHandler(arg);
+            }
             return wrapDomElement(arg);
         };
 
@@ -173,6 +181,18 @@
                 },
 
                 contents: function() { return this.childNodes },
+
+                offset: function() {
+                    var left = top = 0;
+                    if (obj.offsetParent) {
+                        var obj = this;
+                        do {
+                            left += obj.offsetLeft;
+                            top += obj.offsetTop;
+                        } while ( (obj = obj.offsetParent) );
+                    }
+                    return {left: left, top: top};
+                },
             };
         })();
 
@@ -187,5 +207,5 @@
         };
 
         return $;
-    });
+    })()
 );
