@@ -44,7 +44,7 @@ As in example above, it can be just a text occurring somewhere on the website. T
 in a browser should result in loading the desired page and scrolling down to the first occurrence
 of specified text.
 
-## How does it work
+## How does it work?
 
 _refrag.js_ implements the mechanism described above as a drop-in JS script. The script can be
 painlessly included within a website, making it a potential target for <code>#^</code> links:
@@ -52,7 +52,7 @@ painlessly included within a website, making it a potential target for <code>#^<
 ```html
 <script type="text/javascript" src="refrag.js"></script>
 ```
-When the page is loaded, _refrag.js_ will inspect the URL and search for the caret hashbang.
+When the page is loaded, _refrag.js_ will inspect the URL and search for a caret hashbang.
 If it's present, it'll take the user to the appropriate page fragment.
 
 
