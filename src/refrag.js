@@ -36,7 +36,7 @@
         var $anchorMatch = searchText(anchor);
         if ($anchorMatch) {
             log("Matched element <" + $anchorMatch.nodeName + ">");
-            scrollToElement($anchorMatch);
+            $anchorMatch.scrollIntoView();
             highlightElement($anchorMatch);
         }
         else {
@@ -72,14 +72,14 @@
         $.each($root.contents(), domWalker());
         
         if (!$match)    return null;
-        return searchText(textToFind, $match) || $match;
+        return searchText(text, $match) || $match;
     };
 
     /** User interaction **/
 
     var scrollToElement = function($elem) {
         // correcting for cases where $elem.offset().top returns 0
-        //even though it shouldn't (e.g.: text DOM nodes)
+        // even though it shouldn't (e.g.: text DOM nodes)
         var top = $elem.offset().top, parentTop;
         $elem = $elem.parent();
         while ((parentTop = $elem.offset().top) >= top) {
@@ -92,11 +92,11 @@
 
     var highlightElement = function($elem) {
         var isText = $elem.nodeName === '#text';
-        if (isText) {
-            var $span = $('<span/>').html($elem.text());
-            $elem.replaceWith($span);   // this is probably complex to implement...
-            $elem = $span;
-        }
+        // if (isText) {
+        //     var $span = $('<span/>').html($elem.text());
+        //     $elem.replaceWith($span);   // this is probably complex to implement...
+        //     $elem = $span;
+        // }
         $elem.css('background-color', 'yellow');
     };
 
@@ -106,7 +106,7 @@
 
     // This our own implementation of something that resembles jQuery, but provides only
     // extremely basic functionality. Most notably, $('selector') returns only first match
-    // as (almost) normal DOM object, and works only as delegate to getElementsById/querySelector.
+    // as (almost) normal DOM object, and works only as delegate to getElementById/querySelector.
     // That is, a $('foo') object is **NOT** an array!
     (function() {
         var $ = function(arg) {
@@ -114,9 +114,9 @@
             var queryDom = function(selector) {
                 if (selector[0] == '#') {
                     var elemId = selector.substring(1);
-                    var elems = document.getElementsById(elemId);
-                    if (!elems || elems.length == 0)    return null;
-                    return wrapDomElement(elems[0]);
+                    var elem = document.getElementById(elemId);
+                    if (!elem)  return null;
+                    return wrapDomElement(elem);
                 }
 
                 if (document.querySelector)
@@ -136,16 +136,17 @@
             var wrapDomElement = function(elem) {
                 // add functions from $.fn
                 for (var key in $.fn) {
-                    if ($.fn.hasOwnProperty(key) && !elem[key]) {
+                    if ($.fn.hasOwnProperty(key) && typeof elem[key] === 'undefined') {
                         var func = $.fn[key];
                         elem[key] = func;
                     }
                 }
+                return elem;
             };
 
             var addReadyHandler = function(func) {
                 if (window.addEventListener)
-                    return window.addEventListener('onload', func);
+                    return window.addEventListener('load', func);
                 else {
                     window.onload = func;
                     return true;
@@ -158,7 +159,7 @@
                     return createDom(arg);
                 return queryDom(arg);
             }
-            if (typeof arg == 'function') {
+            if (typeof arg === 'function') {
                 return addReadyHandler(arg);
             }
             return wrapDomElement(arg);
@@ -168,6 +169,9 @@
             // additional functions, bound to objects returned by $()
             
             return {
+                isText: function() { return this.nodeType == 3; },
+                contents: function() { return this.childNodes },
+
                 html: function(arg) {
                     if (typeof arg !== 'undefined')
                         this.innerHTML = arg;
@@ -175,16 +179,21 @@
                 },
 
                 text: function() {
+                    if (this.isText())  return this.nodeValue;
+
                     var res = "";
-                    var children = 
-                    $.each(this.childNodes, function() {
-                        var isText = this.nodeName === '#text';
-                        res += isText ? this.nodeText : $(this).text();
+                    var children = this.childNodes;
+                    $.each(children, function() {
+                        res += $(this).text();
                     });
                     return res;
                 },
 
-                contents: function() { return this.childNodes },
+                css: function(style, value) {
+                    if (typeof value !== 'undefined')
+                        this.style[style] = value;
+                    return this.style[style];
+                },
 
                 offset: function() {
                     var left = top = 0;
@@ -198,10 +207,14 @@
                     return {left: left, top: top};
                 },
 
-                css: function(style, value) {
-                    if (typeof value !== 'undefined')
-                        this.style[style] = value;
-                    return this.style[style];
+                scrollIntoView: function(how) {
+                    /** Adds scrollIntoView() for DOM elements tha don't support it natively,
+                        most notably text nodes, */
+                    var obj  = this;
+                    while (obj && obj.nodeType != 1)    // 1 is HTML <element/>
+                        obj = obj.previousSibling;
+                    obj = obj || this.parentNode;
+                    if (obj)    $(obj).scrollIntoView(how);
                 },
             };
         })();
@@ -211,7 +224,8 @@
                 if (seq.hasOwnProperty(idx)) {
                     var elem = seq[idx];
                     var shallContinue = func.apply(elem, [idx, elem, seq]);
-                    if (!shallContinue) break;
+                    if (shallContinue === false)    // only explicit 'return false' counts as break
+                        break;
                 }
             }
         };
