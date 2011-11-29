@@ -159,15 +159,23 @@
             return result;            
         };
 
-        var injectElementAroundText = function($node, text, elemName) {
+        var injectElementAroundText = function($node, start, end, elemName) {
             /** Injects an element inside given text node.
-                The new element surrounds given text, while the rest
+                The new element surrounds given portion of text, while the rest
                 of the text inside node will form new text nodes.  */
             elemName = elemName || 'span';
             
             var nodeText = $node.text();
-            var start = nodeText.indexOf(text);
-            var end = start + text.length;
+
+            var text;
+            if (typeof start === 'string') {
+                // text was provided instead of offsets
+                text = start;
+                start = nodeText.indexOf(text);
+                end = start + text.length;
+            }
+            else
+                text = nodeText.substring(start, end);
 
             var $textBefore = $(document.createTextNode(nodeText.substring(0, start)));
             var $textAfter = $(document.createTextNode(nodeText.substring(end)));
@@ -197,10 +205,10 @@
             }
             else textNodes = findMatchingTextNodes($elem, text);
 
-            for (var idx in textNodes) {
-                var item = textNodes[idx];
-                var highlightText = item.node.text().substr(item.offset, item.length);
-                var $highlightElem = injectElementAroundText(item.node, highlightText);
+            for (var i = 0; i < textNodes.length; ++i) {
+                var item = textNodes[i];
+                var start = item.offset, end = item.offset + item.length;
+                var $highlightElem = injectElementAroundText(item.node, start, end);
                 elemsToHighlight.push($highlightElem);
             }
 
