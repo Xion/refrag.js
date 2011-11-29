@@ -1,6 +1,6 @@
 /**
  * refrag.js
- * Enables linking to arbitrary content on page
+ * Breathing new life into URL hashes
  * @author Karol Kuczmarski
  */
 
