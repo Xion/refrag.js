@@ -47,34 +47,51 @@
 
     /** Searching for text within HTML document **/
 
-    var searchText = function(text, $root) {
+    var searchText = (function() {
         /** Matches the given text, returning
             the innermost DOM element that contains it. */
-        var $match = null;
-        var domWalker = function(docText) {
-            docText = docText || "";
-            return function() {
-                if ($match) return false;
 
-                var $this = $(this);
-                var elemText = $this.innerText();
-                var newDocText = docText + elemText;
+        var findTextInDom = function(text, $root, isRecursive) {
+            var $match = null;
 
-                if (newDocText.indexOf(text) >= 0) {
-                    $match = $this;
-                    return false;
-                }
+            var domWalker = function(docText) {
+                docText = docText || "";
+                return function() {
+                    if ($match) return false;
 
-                $.each($this.contents(), domWalker(newDocText));
+                    var $this = $(this);
+                    var elemText = $this.innerText();
+                    var newDocText = docText + elemText;
+
+                    if (newDocText.indexOf(text) >= 0) {
+                        $match = $this;
+                        return false;
+                    }
+
+                    $.each($this.contents(), domWalker(newDocText));
+                };
             };
+
+            $root = $root || $('body');
+            $.each($root.contents(), domWalker());
+            
+            if (!$match) {
+                if (isRecursive)  return null;
+
+                // for top-level call of this function,
+                // search root element as last resort
+                domWalker().apply($root);
+                return $match;
+            }
+
+            return findTextInDom(text, $match, true) || $match;
         };
 
-        $root = $root || $('body');
-        domWalker().apply($root);
-        
-        if (!$match)    return null;
-        return searchText(text, $match) || $match;
-    };
+        return function(text) {
+            return findTextInDom(text);
+        };
+    })();
+    
 
     /** User interaction **/
 
