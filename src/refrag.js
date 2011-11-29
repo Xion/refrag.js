@@ -57,7 +57,7 @@
                 if ($match) return false;
 
                 var $this = $(this);
-                var elemText = $this.text();
+                var elemText = $this.innerText();
                 var newDocText = docText + elemText;
 
                 if (newDocText.indexOf(text) >= 0) {
@@ -70,7 +70,7 @@
         };
 
         $root = $root || $('body');
-        $.each($root.contents(), domWalker());
+        domWalker().apply($root);
         
         if (!$match)    return null;
         return searchText(text, $match) || $match;
@@ -111,8 +111,8 @@
                         - offset - Offset inside text node where the matching fragment of text starts
                                    (can be >0 only for first item)
                         - length - Length of matching fragment of text that lies inside the node
-                                   (can be <node.text().length only for last item) */
-            var elemText = $elem.text();
+                                   (can be <node.innerText().length only for last item) */
+            var elemText = $elem.innerText();
             var elemTextNodes = findTextNodes($elem);
             var offset = elemText.indexOf(text);
 
@@ -122,7 +122,7 @@
 
             // find the start node
             for (var i = 0; i < elemTextNodes.length; ++i) {
-                var nodeText = elemTextNodes[i].text();
+                var nodeText = elemTextNodes[i].innerText();
                 lenSum += nodeText.length;
                 if (lenSum >= offset) {
                     startNodeIdx = i;
@@ -136,7 +136,7 @@
             // find the end node
             if (endNodeIdx < 0) 
                 for (var i = startNodeIdx + 1; i < elemTextNodes.length; ++i) {
-                    var nodeText = elemTextNodes[i].text();
+                    var nodeText = elemTextNodes[i].innerText();
                     lenSum += nodeText.length;
                     if (lenSum >= offset + text.length) {
                         endNodeIdx = i;
@@ -152,7 +152,7 @@
 
                 var item = {node: textNode};
                 item.offset = i == startNodeIdx ? offset : 0;
-                item.length = i == endNodeIdx ? text.length - (lenSum - offset) : textNode.text().length;
+                item.length = i == endNodeIdx ? text.length - (lenSum - offset) : textNode.innerText().length;
 
                 result.push(item);
                 lenSum += item.length;
@@ -167,7 +167,7 @@
                 of the text inside node will form new text nodes.  */
             elemName = elemName || 'span';
             
-            var nodeText = $node.text();
+            var nodeText = $node.innerText();
 
             var text;
             if (typeof start === 'string') {
@@ -201,7 +201,7 @@
             var textNodes;
             if ($elem.isText()) {
                 var item = {node: $elem,
-                            offset: $elem.text().indexOf(text),
+                            offset: $elem.innerText().indexOf(text),
                             length: text.length};
                 textNodes = [item];
             }
@@ -314,13 +314,13 @@
                     return this.innerHTML;
                 },
 
-                text: function() {
+                innerText: function() { // text() would conflict with body.text
                     if (this.isText())  return this.nodeValue;
 
                     var res = "";
                     var children = this.childNodes;
                     $.each(children, function() {
-                        res += $(this).text();
+                        res += $(this).innerText();
                     });
                     return res;
                 },
