@@ -36,8 +36,9 @@
         var $anchorMatch = searchText(anchor);
         if ($anchorMatch) {
             log("Matched element <" + $anchorMatch.nodeName + ">");
-            $anchorMatch.scrollIntoView();
-            highlightText(anchor, $anchorMatch);
+            var $highlighted = highlightText(anchor, $anchorMatch);
+            var scrollTarget = $highlighted || $anchorMatch;
+            scrollTarget.scrollIntoView();
         }
         else {
             log('warn', "No element matching anchor: " + anchor);
@@ -194,6 +195,8 @@
 
             for (var idx in elemsToHighlight)
                 elemsToHighlight[idx].css('background-color', 'yellow');
+
+            return elemsToHighlight.length > 0 ? elemsToHighlight[0] : null;
         };
     })();
 
