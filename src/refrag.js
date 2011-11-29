@@ -107,10 +107,10 @@
                 might contain some extra text as prefix and suffix, respectively.
                 @return A list of objects with following properties:
                         - node - A text node
-                        - offset - Offset inside text node where the matching text starts
-                                   (>0 only for first item)
-                        - length - Length of portion of matched text that lies inside the node
-                                   (<node.text().length only for last item) */
+                        - offset - Offset inside text node where the matching fragment of text starts
+                                   (can be >0 only for first item)
+                        - length - Length of matching fragment of text that lies inside the node
+                                   (can be <node.text().length only for last item) */
             var elemTextNodes = findTextNodes($elem);
             
             var nodeIdx = 0;
@@ -133,10 +133,9 @@
 
                         var item = {node: textNode};
                         item.offset = k == nodeIdx ? matchIndex : 0;
+                        item.length = k + 1 == i ? text.length - posInText : textNode.text().length;
 
-                        var d = item.offset > 0 ? item.offset + 1 : posInText;
-                        item.length = Math.min(nodeTextLength, textNode.text().length - d);
-                        
+                        result.push(item);
                         posInText += item.length;
                     }
                 }
@@ -176,12 +175,20 @@
             // for every text node in matched element(s),
             // we inject <span>'s that surround the matched text itself
             // so that we can highlight it
-            var textNodes = $elem.isText() ? [$elem] : findMatchingTextNodes($elem, text);
-
-
             
+            var textNodes;
+            if ($elem.isText()) {
+                var item = {node: $elem,
+                            offset: $elem.text().indexOf(text),
+                            length: text.length};
+                textNodes = [item];
+            }
+            else textNodes = findMatchingTextNodes($elem, text);
+
             for (var idx in textNodes) {
-                var $highlightElem = injectElementAroundText(textNodes[idx], text);
+                var item = textNodes[idx];
+                var highlightText = item.node.text().substring(item.offset, item.length);
+                var $highlightElem = injectElementAroundText(item.node, highlightText);
                 elemsToHighlight.push($highlightElem);
             }
 
