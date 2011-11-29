@@ -37,7 +37,7 @@
         if ($anchorMatch) {
             log("Matched element <" + $anchorMatch.nodeName + ">");
             $anchorMatch.scrollIntoView();
-            highlightElement($anchorMatch);
+            highlightText(anchor, $anchorMatch);
         }
         else {
             log('warn', "No element matching anchor: " + anchor);
@@ -77,13 +77,61 @@
 
     /** User interaction **/
 
-    var highlightElement = function($elem) {
+    var highlightText = function(text, $elem) {
         if ($elem.isText()) {
             var $span = $('<span/>').html($elem.text());
             $elem.replaceWith($span);
             $elem = $span;
         }
         $elem.css('background-color', 'yellow');
+    };
+
+    var findMatchingTextNodes = function($elem, text) {
+        /** Retrieves the text nodes (within given DOM node)
+            that contain given text.
+            Note that first and last element of resulting list
+            might contain some extra text as prefix and suffix, respectively. */
+        var elemTextNodes = findTextNodes($elem);
+        
+        var nodeIdx = 0;
+        while (nodeIdx < elemTextNodes.length) {
+            // build a potential match
+            var maybeMatch = "";
+            var i = nodeIdx;
+            while (i < elemTextNodes.length && maybeMatch.length < text.length) {
+                maybeMatch += elemTextNodes[i];
+                i++;
+            }
+
+            if (maybeMatch.indexOf(text) >= 0)
+                return elemTextNodes.slice(nodeIdx, i);    
+            
+            // no match - continue from the last text node we considered
+            nodeIdx = i;
+        }
+
+        return [];
+    };
+
+    var findTextNodes = function($node) {
+        /** Retrieves all text nodes contained within given DOM node.
+            Returns a list of such nodes in depth-first order
+            (that is, the order they should usually appear on page). */
+        var textNodes = [];
+
+        var elemStack = [];
+        elemStack.push($node);
+        while (elemStack.length > 0) {
+            var $this = $(elemStack.pop());
+            if ($this.isText()) textNodes.push($this);
+            else {
+                var children = $this.contents();
+                for (var idx in children)
+                    elemStack.push(children[idx]);
+            }
+        }
+
+        return textNodes;
     };
 
 })(
