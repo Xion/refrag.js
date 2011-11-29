@@ -52,7 +52,7 @@ painlessly included within a website, making it a potential target for <code>#^<
 ```html
 <script type="text/javascript" src="refrag.js"></script>
 ```
-When the page is loaded, _refrag.js_ will inspect the URL and search for a caret hashbang.
+When the page is loaded, _refrag.js_ will inspect the URL and search for a hash-caret sequence.
 If it's present, it'll take the user to the appropriate page fragment.
 
 
@@ -62,7 +62,6 @@ The project is quite experimental at this point. There are few issues that remai
 
 * Making it possible to refer to other elements that simple text phrases: headings, images, tables, etc.
 * Improving the highlight on matched elements (making it less intrusive and more fitting with surrounding CSS)
-* Narrowing the scope of highlight to the actual content that matched the locator
 * Working on cross-browser compatiblity while preserving the lack of external dependencies
 
 If you like the idea of _Refrag_ and how it could improve the Web, don't hesitate to contribute :)
