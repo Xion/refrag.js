@@ -187,7 +187,7 @@
 
             for (var idx in textNodes) {
                 var item = textNodes[idx];
-                var highlightText = item.node.text().substring(item.offset, item.length);
+                var highlightText = item.node.text().substr(item.offset, item.length);
                 var $highlightElem = injectElementAroundText(item.node, highlightText);
                 elemsToHighlight.push($highlightElem);
             }
@@ -222,9 +222,9 @@
                 return null;
             };
             var createDom = function(desc) {
-                desc = desc.substring(1, desc.length - 1);
+                desc = desc.substr(1, desc.length - 2);
                 if (desc[desc.length - 1] == '/')
-                    desc = desc.substring(0, desc.length - 1);
+                    desc = desc.substr(0, desc.length - 1);
 
                 var elem = document.createElement(desc);
                 return wrapDomElement(elem);
@@ -333,7 +333,7 @@
                 },
 
                 append: function(node) {
-                    this.childNodes.push(node);
+                    this.appendChild(node);
                     return this;
                 },
 
@@ -341,6 +341,7 @@
                     var parent = this.parentNode;
                     parent.insertBefore(node, this);
                     parent.removeChild(this);
+                    return this;
                 },
             };
         })();
