@@ -118,6 +118,7 @@
 
             var startNodeIdx, endNodeIdx = -1;
             var lenSum = 0;
+            var offsetInStartNode;  // will be useful later
 
             // find the start node
             for (var i = 0; i < elemTextNodes.length; ++i) {
@@ -125,6 +126,7 @@
                 lenSum += nodeText.length;
                 if (lenSum >= offset) {
                     startNodeIdx = i;
+                    offsetInStartNode = offset - (lenSum - nodeText.length);
                     if (lenSum >= offset + text.length)
                         endNodeIdx = i; // text is contained within single text node
                     break;
@@ -143,14 +145,14 @@
                 }
 
             // construct result
-            lenSum = 0;
+            lenSum = 0; offset = offsetInStartNode;
             var result = [];
             for (var i = startNodeIdx; i <= endNodeIdx; ++i) {
                 var textNode = elemTextNodes[i];
 
                 var item = {node: textNode};
                 item.offset = i == startNodeIdx ? offset : 0;
-                item.length = i == endNodeIdx ? text.length - lenSum : textNode.text().length - item.offset;
+                item.length = i == endNodeIdx ? text.length - (lenSum - offset) : textNode.text().length;
 
                 result.push(item);
                 lenSum += item.length;
