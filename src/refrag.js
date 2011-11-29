@@ -92,13 +92,13 @@
                 var $this = $(elemStack.pop());
                 if ($this.isText()) textNodes.push($this);
                 else {
-                    var children = $this.contents();
-                    for (var idx in children)
-                        elemStack.push(children[idx]);
+                    $.each($this.contents(), function() {
+                        elemStack.push(this);
+                    });
                 }
             }
 
-            return textNodes;
+            return textNodes.reverse();
         };
 
         var findMatchingTextNodes = function($elem, text) {
@@ -112,40 +112,51 @@
                                    (can be >0 only for first item)
                         - length - Length of matching fragment of text that lies inside the node
                                    (can be <node.text().length only for last item) */
+            var elemText = $elem.text();
             var elemTextNodes = findTextNodes($elem);
-            
-            var nodeIdx = 0;
-            while (nodeIdx < elemTextNodes.length) {
-                // build a potential match
-                var maybeMatch = "";
-                var i = nodeIdx;
-                while (i < elemTextNodes.length && maybeMatch.length < text.length) {
-                    maybeMatch += elemTextNodes[i];
-                    i++;
+            var offset = elemText.indexOf(text);
+
+            var startNodeIdx, endNodeIdx = -1;
+            var lenSum = 0;
+
+            // find the start node
+            for (var i = 0; i < elemTextNodes.length; ++i) {
+                var nodeText = elemTextNodes[i].text();
+                lenSum += nodeText.length;
+                if (lenSum >= offset) {
+                    startNodeIdx = i;
+                    if (lenSum >= offset + text.length)
+                        endNodeIdx = i; // text is contained within single text node
+                    break;
                 }
-
-                var matchIndex = maybeMatch.indexOf(text);
-                if (matchIndex >= 0) {
-                    // match found, construct result
-                    var result = [];
-                    var posInText = 0;
-                    for (var k = nodeIdx; k < i; ++k) {
-                        var textNode = elemTextNodes[k];
-
-                        var item = {node: textNode};
-                        item.offset = k == nodeIdx ? matchIndex : 0;
-                        item.length = k + 1 == i ? text.length - posInText : textNode.text().length;
-
-                        result.push(item);
-                        posInText += item.length;
-                    }
-                }
-                
-                // no match - continue from the last text node we considered
-                nodeIdx = i;
             }
 
-            return [];
+            // find the end node
+            if (endNodeIdx < 0) 
+                for (var i = startNodeIdx + 1; i < elemTextNodes.length; ++i) {
+                    var nodeText = elemTextNodes[i].text();
+                    lenSum += nodeText.length;
+                    if (lenSum >= offset + text.length) {
+                        endNodeIdx = i;
+                        break;
+                    }
+                }
+
+            // construct result
+            lenSum = 0;
+            var result = [];
+            for (var i = startNodeIdx; i <= endNodeIdx; ++i) {
+                var textNode = elemTextNodes[i];
+
+                var item = {node: textNode};
+                item.offset = i == startNodeIdx ? offset : 0;
+                item.length = i == endNodeIdx ? text.length - lenSum : textNode.text().length - item.offset;
+
+                result.push(item);
+                lenSum += item.length;
+            }
+
+            return result;            
         };
 
         var injectElementAroundText = function($node, text, elemName) {
