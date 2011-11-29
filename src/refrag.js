@@ -78,12 +78,37 @@
     /** User interaction **/
 
     var highlightText = function(text, $elem) {
-        if ($elem.isText()) {
-            var $span = $('<span/>').html($elem.text());
-            $elem.replaceWith($span);
-            $elem = $span;
+        var elemsToHighlight = [];
+
+        // for every text node in matched element(s),
+        // we inject <span>'s that surround the matched text itself
+        // so that we can highlight it
+        var textNodes = $elem.isText() ? [$elem] : findMatchingTextNodes($elem, text);
+        for (var idx in textNodes) {
+            var $highlightElem = injectElementAroundText(textNodes[idx]);
+            elemsToHighlight.push($highlightElem);
         }
-        $elem.css('background-color', 'yellow');
+
+        for (var idx in elemsToHighlight)
+            elemsToHighlight[idx].css('background-color', 'yellow');
+    };
+
+    var injectElementAroundText = function($node, text) {
+        /** Injects a <span> element inside given text node. The element
+            will surround given text.  */
+        var nodeText = $node.text();
+        var start = nodeText.indexOf(text);
+        var end = start + text.length;
+
+        var $textBefore = $(document.createTextNode(nodeText.substring(0, start)));
+        var $textAfter = $(document.createTextNode(nodeText.substring(end)));
+        var $matchedText = $('<span/>').html(text);
+
+        var $elemWrapper = $('<span/>');
+        $elemWrapper.append($textBefore).append($matchedText).append($textAfter);
+        $node.replaceWith($elemWrapper);
+
+        return $matchedText;
     };
 
     var findMatchingTextNodes = function($elem, text) {
@@ -215,6 +240,8 @@
             
             return {
                 isText: function() { return this.nodeType == 3; },
+
+                parent: function() { return $(this.parentNode); },
                 contents: function() { return this.childNodes },
 
                 html: function(arg) {
@@ -265,6 +292,11 @@
                         obj = obj.previousSibling;
                     obj = obj || this.parentNode;
                     if (obj)    $(obj).scrollIntoView(how);
+                },
+
+                append: function(node) {
+                    this.childNodes.push(node);
+                    return this;
                 },
 
                 replaceWith: function(node) {
