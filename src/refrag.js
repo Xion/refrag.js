@@ -185,16 +185,7 @@
             elemName = elemName || 'span';
             
             var nodeText = $node.innerText();
-
-            var text;
-            if (typeof start === 'string') {
-                // text was provided instead of offsets
-                text = start;
-                start = nodeText.indexOf(text);
-                end = start + text.length;
-            }
-            else
-                text = nodeText.substring(start, end);
+            var text = nodeText.substring(start, end);
 
             var $textBefore = $(document.createTextNode(nodeText.substring(0, start)));
             var $textAfter = $(document.createTextNode(nodeText.substring(end)));
@@ -205,6 +196,11 @@
             $node.replaceWith($elemWrapper);
 
             return $matchedText;
+        };
+
+        var performHighlighting = function($elem) {
+            /** Adds highlighting to single element. */
+            $elem.css('background-color', '#ffffbb');
         };
     
         /** Actual highlighting function. */
@@ -232,7 +228,7 @@
             }
 
             for (var idx in elemsToHighlight)
-                elemsToHighlight[idx].css('background-color', 'yellow');
+                performHighlighting(elemsToHighlight[idx]);
 
             return elemsToHighlight.length > 0 ? elemsToHighlight[0] : null;
         };
@@ -348,7 +344,17 @@
                         this.style[style] = value;
                         return this;
                     }
-                    return this.style[style];
+                    
+                    var inlineStyle = this.style[style];
+                    if (typeof inlineStyle !== 'undefined')
+                        return inlineStyle;
+
+                    if (this.currentStyle)
+                        return this.currentStyle[style];    // IE
+                    else if (window.getComputedStyle) {
+                        var elemStyle = document.defaultView.getComputedStyle(this, null);
+                        return elemStyle.getPropertyValue(style);
+                    }
                 },
 
                 offset: function() {
