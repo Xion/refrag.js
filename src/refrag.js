@@ -51,10 +51,9 @@
         /** Matches the given text, returning
             the innermost DOM element that contains it. */
 
-        var findTextInDom = function(text, $root, isRecursive) {
-            text = sanitizeText(text);
-
+        var findSanitizedTextInDom = function(text, $root, isRecursive) {
             var $match = null;
+
             var domWalker = function(docText) {
                 docText = docText || "";
                 return function() {
@@ -90,11 +89,12 @@
                 return $match;
             }
 
-            return findTextInDom(text, $match, true) || $match;
+            return findSanitizedTextInDom(text, $match, true) || $match;
         };
 
         return function(text) {
-            return findTextInDom(text);
+            text = sanitizeText(text);
+            return findSanitizedTextInDom(text);
         };
     })();
     
@@ -126,7 +126,7 @@
 
         var findMatchingTextNodes = function($elem, text) {
             /** Retrieves the text nodes (within given DOM node) that contain given text.
-                The matching is loose: it will perform some text coercing/sanitizing before attempting a match.
+                The matching is inexact: it will perform some text coercing/sanitizing before attempting a match.
                 Note that first and last element of resulting list
                 might contain some extra text as prefix and suffix, respectively.
                 @return A list of objects with following properties:
@@ -137,7 +137,7 @@
                                    (can be <node.innerText().length only for last item) */
             var elemText = $elem.innerText();
             var elemTextNodes = findTextNodes($elem);
-            var offset = sanitizeText(elemText).indexOf(sanitizeText(text));
+            var offset = fuzzyIndexOf(elemText, text);
 
             var startNodeIdx, endNodeIdx = -1;
             var lenSum = 0;
@@ -219,9 +219,8 @@
             
             var textNodes;
             if ($elem.isText()) {
-                var item = {node: $elem,
-                            offset: $elem.innerText().indexOf(text),
-                            length: text.length};
+                var offset = fuzzyIndexOf($elem.innerText(), text);
+                var item = {node: $elem, offset: offset, length: text.length};
                 textNodes = [item];
             }
             else textNodes = findMatchingTextNodes($elem, text);
@@ -241,6 +240,15 @@
     })();
 
     /** Utility functions */
+
+    var fuzzyIndexOf = function(haystack, needle) {
+        /** Finds one text (needle) inside another one (haystack)
+            using inexact ("fuzzy") matching. Both texts are "sanitized"
+            before attempting a match. */
+        haystack = sanitizeText(haystack);
+        needle = sanitizeText(needle);
+        return haystack.indexOf(needle);
+    };
 
     var sanitizeText = function(text) {
         /** Removes some distinguishing features from given text,
