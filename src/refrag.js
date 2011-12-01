@@ -52,17 +52,23 @@
             the innermost DOM element that contains it. */
 
         var findTextInDom = function(text, $root, isRecursive) {
-            var $match = null;
+            text = sanitizeText(text);
 
+            var $match = null;
             var domWalker = function(docText) {
                 docText = docText || "";
                 return function() {
                     if ($match) return false;
 
                     var $this = $(this);
-                    var elemText = $this.innerText();
-                    var newDocText = docText + elemText;
+                    var elemText = sanitizeText($this.innerText());
 
+                    // take care of whitespace at the boundary between
+                    // current text and new element
+                    if (/\s+$/.test(docText) && /^\s+/.test(elemText))
+                        elemText = elemText.replace(/^\s+/, "");    // trim whitespace from start of element text
+
+                    var newDocText = docText + elemText;
                     if (newDocText.indexOf(text) >= 0) {
                         $match = $this;
                         return false;
@@ -119,8 +125,8 @@
         };
 
         var findMatchingTextNodes = function($elem, text) {
-            /** Retrieves the text nodes (within given DOM node)
-                that contain given text.
+            /** Retrieves the text nodes (within given DOM node) that contain given text.
+                The matching is loose: it will perform some text coercing/sanitizing before attempting a match.
                 Note that first and last element of resulting list
                 might contain some extra text as prefix and suffix, respectively.
                 @return A list of objects with following properties:
@@ -131,7 +137,7 @@
                                    (can be <node.innerText().length only for last item) */
             var elemText = $elem.innerText();
             var elemTextNodes = findTextNodes($elem);
-            var offset = elemText.indexOf(text);
+            var offset = sanitizeText(elemText).indexOf(sanitizeText(text));
 
             var startNodeIdx, endNodeIdx = -1;
             var lenSum = 0;
@@ -234,6 +240,29 @@
         };
     })();
 
+    /** Utility functions */
+
+    var sanitizeText = function(text) {
+        /** Removes some distinguishing features from given text,
+            including case and excess whitespace. */
+        text = text || "";
+        text = text.toLowerCase();
+
+        // collapse sequences of whitespace into single space
+        var _s = /\s/;
+        var res = "";
+        for (var i = 0; i < text.length; ++i) {
+            if (_s.test(text[i])) {
+                res += " ";
+                while (i + 1 < text.length && _s.test(text[i + 1]))
+                    ++i;
+            }
+            else
+                res += text[i];
+        }
+
+        return res;
+    };
 })(
 
     /** Our own little jQuery **/
@@ -314,6 +343,15 @@
             };
             
             return {
+                on: function(eventName, handler) {
+                    eventName = eventName.toLowerCase();
+                    if (this.addEventListener)
+                        this.addEventListener(eventName, handler);
+                    else
+                        this['on' + eventName] = handler;
+                    return this;
+                },
+
                 isText: function() { return this.nodeType == 3; },
 
                 parent: function() { return $(this.parentNode); },
