@@ -61,7 +61,6 @@ If it's present, it'll take the user to the appropriate page fragment.
 The project is quite experimental at this point. There are few issues that remain to be addressed, such as:
 
 * Making it possible to refer to elements other than simple text phrases: headings, images, tables, etc.
-* Allowing inexact matches for text phrases, e.g. ignoring case where appropriate and be more flexible with whitespace
 * Improving the highlight on matched elements (making it less intrusive and more fitting with surrounding CSS)
 * Working on cross-browser compatiblity while preserving the lack of external dependencies
 
