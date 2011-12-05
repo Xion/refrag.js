@@ -8,6 +8,7 @@
 (function($) {
     
     var PREFIX = '^';
+    var TAG_SEP = PREFIX;
 
     var log = function(type_or_msg, msg) {
         var type, message;
@@ -33,7 +34,7 @@
         log("Attempting to redirect...");
         anchor = unescape(anchor);
 
-        var $anchorMatch = searchText(anchor);
+        var $anchorMatch = matchPhrase(anchor);
         if ($anchorMatch) {
             log("Matched element <" + $anchorMatch.nodeName + ">");
             var $highlighted = highlightText(anchor, $anchorMatch);
@@ -45,11 +46,25 @@
         }
     });
 
-    /** Searching for text within HTML document **/
+    /** Searching for anchor query within HTML document **/
 
-    var searchText = (function() {
-        /** Matches the given text, returning
-            the innermost DOM element that contains it. */
+    var matchQuery = (function() {
+        /** Searches for a query within HTML document and returns the DOM element that contains it.
+            Depending on the phrase's form, it could be an innermost
+            DOM element containing given text or a specified DOM element,
+            such as header. */
+
+        var QUERY_SEPS_REGEX = new Regex('\\' + TAG_SEP + '[^\\' + TAG_SEP + ']', 'g');
+
+        var parseQuery = function(query) {
+            sepIndex = query.search(QUERY_SEPS_REGEX);
+            if (sepIndex < 0)   return { text: query };
+            else {
+                var tag = query.substring(0, sepIndex);
+                var text = query.substring(sepIndex + 1);
+                return { tag: tag, text: text };
+            }
+        };
 
         var findSanitizedTextInDom = function(text, $root, isRecursive) {
             var $match = null;
@@ -92,9 +107,12 @@
             return findSanitizedTextInDom(text, $match, true) || $match;
         };
 
-        return function(text) {
-            text = sanitizeText(text);
-            return findSanitizedTextInDom(text);
+        return function(query) {
+            var q = parseQuery(query);
+            q.text = sanitizeText(q.text);
+
+            var $tag = q.tag ? $(q.tag) : undefined;
+            return findSanitizedTextInDom(text, $tag);
         };
     })();
     
