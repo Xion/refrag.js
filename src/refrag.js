@@ -34,7 +34,7 @@
         log("Attempting to redirect...");
         anchor = unescape(anchor);
 
-        var $anchorMatch = matchPhrase(anchor);
+        var $anchorMatch = matchQuery(anchor);
         if ($anchorMatch) {
             log("Matched element <" + $anchorMatch.nodeName + ">");
             var $highlighted = highlightText(anchor, $anchorMatch);
@@ -54,7 +54,7 @@
             DOM element containing given text or a specified DOM element,
             such as header. */
 
-        var QUERY_SEPS_REGEX = new Regex('\\' + TAG_SEP + '[^\\' + TAG_SEP + ']', 'g');
+        var QUERY_SEPS_REGEX = new RegExp('\\' + TAG_SEP + '[^\\' + TAG_SEP + ']', 'g');
 
         var parseQuery = function(query) {
             sepIndex = query.search(QUERY_SEPS_REGEX);
@@ -112,7 +112,7 @@
             q.text = sanitizeText(q.text);
 
             var $tag = q.tag ? $(q.tag) : undefined;
-            return findSanitizedTextInDom(text, $tag);
+            return findSanitizedTextInDom(q.text, $tag);
         };
     })();
     
