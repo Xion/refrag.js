@@ -34,11 +34,11 @@
         log("Attempting to redirect...");
         anchor = unescape(anchor);
 
-        var $anchorMatch = matchQuery(anchor);
-        if ($anchorMatch) {
-            log("Matched element <" + $anchorMatch.nodeName + ">");
-            var $highlighted = highlightText(anchor, $anchorMatch);
-            var scrollTarget = $highlighted || $anchorMatch;
+        var am = matchQuery(anchor);
+        if (am.$dom) {
+            log("Matched element <" + am.$dom.nodeName + ">");
+            var $highlighted = highlightText(am.text, am.$dom);
+            var scrollTarget = $highlighted || am.$dom;
             scrollTarget.scrollIntoView();
         }
         else {
@@ -64,6 +64,17 @@
                 var text = query.substring(sepIndex + 1);
                 return { tag: tag, text: text };
             }
+        };
+
+        var findTextWithinTags = function(text, tag) {
+            var elements = document.getElementsByTagName(tag);
+            if (!elements)  return null;
+
+            for (var i = 0; i < elements.length; ++i) {
+                var $match = findSanitizedTextInDom(text, $(elements[i]));
+                if ($match) return $match;
+            }
+            return null;
         };
 
         var findSanitizedTextInDom = function(text, $root, isRecursive) {
@@ -110,9 +121,8 @@
         return function(query) {
             var q = parseQuery(query);
             q.text = sanitizeText(q.text);
-
-            var $tag = q.tag ? $(q.tag) : undefined;
-            return findSanitizedTextInDom(q.text, $tag);
+            q.$dom = q.tag ? findTextWithinTags(q.text, q.tag) : findSanitizedTextInDom(q.text);
+            return q;
         };
     })();
     
