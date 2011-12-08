@@ -44,6 +44,18 @@ As in example above, it can be just a text occurring somewhere on the website. T
 in a browser should result in loading the desired page and scrolling down to the first occurrence
 of specified text.
 
+### Specific tags
+
+It is also possible to specify a tag where we'd like the text to be found. This is especially useful
+when refering to headings, which usually are enclosed within the <code>h1</code> or <code>h2</code>
+elements (or <code>h3</code>, etc.).
+
+To do that, a name of HTML tag should be put at the beginning of "hashbang", and another caret
+(<code>^</code>) sign shall separate it from the rest of the text. The full URL might therefore
+look like this:
+
+    http://www.example.com/article/523#^h2^A header
+
 ## How does it work?
 
 _refrag.js_ implements the mechanism described above as a drop-in JS script. The script can be
