@@ -5,7 +5,11 @@ rm -r dist/
 
 echo 'Building refrag.js...'
 mkdir dist
+
 uglifyjs --no-copyright -o dist/refrag.min.js src/refrag.js
-echo 'Minified refrag.js saved as dist/refrag.min.js'
+echo 'dist/refrag,min.js built.'
+
+uglifyjs --no-copyright --inline-script --max-line-len 120 -o dist/refrag.min.inline.js src/refrag.js
+echo 'dist/refrag.min.inline.js built.'
 
 echo 'Build succeeded.'
