@@ -1,0 +1,11 @@
+#!/bin/sh
+
+echo 'Cleaning up...'
+rm -r dist/
+
+echo 'Building refrag.js...'
+mkdir dist
+uglifyjs --no-copyright -o dist/refrag.min.js src/refrag.js
+echo 'Minified refrag.js saved as dist/refrag.min.js'
+
+echo 'Build succeeded.'
