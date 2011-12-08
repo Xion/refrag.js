@@ -55,6 +55,15 @@ To do that, a name of HTML tag should be put at the beginning of "hashbang", and
 look like this:
 
     http://www.example.com/article/523#^h2^A header
+    
+### Escaping the caret
+
+In the rare cases when the caret sign itself is part of matched text, it is possible to
+escape it - just use two carets:
+
+    http://www.example.com/article/523#^code^e^^(pi*i)+1=0
+    
+This URL would match the text _e^(pi*i)+1=0_ inside a <code>code</code> element.
 
 ## How does it work?
 
