@@ -2,6 +2,21 @@
 <html>
     <head>
         <title>refrag.js -- test page</title>
+
+        <style type="text/css">
+            .title {
+                font-size: 96px;
+            }
+            .subtitle {
+                font-size: 48px;
+                color: gray;
+            }
+
+            .space {
+                height: 48px;
+            }
+        </style>
+
         <script src="../src/refrag.js"></script>
         <script type="text/javascript">
                 window.onload = function() {
@@ -18,6 +33,13 @@
         </script>
     </head>
     <body>
+        <div class="title">refrag.js</div>
+        <div class="subtitle">Breathing new life into URL hashes</div>
+
+        <div class="space"></div>
+
+        <p>This is an example document for testing the <em>refrag.js</em> functionality.</p>
+
         <div id="testArea">
                 Input some text from below and press Test:
                 <input type="text" id="phrase" width="30"/>
