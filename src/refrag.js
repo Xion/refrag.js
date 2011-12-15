@@ -1,7 +1,7 @@
 /**
  * refrag.js
  * Breathing new life into URL hashes
- * @author Karol Kuczmarski
+ * @author Karol Kuczmarski "Xion"
  */
 
 
@@ -36,7 +36,7 @@
 
         var am = matchQuery(anchor);
         if (am.$dom) {
-            log("Matched element <" + am.$dom.nodeName + ">");
+            log("Matched '" + am.$dom.nodeName + "' element");
             var $highlighted = highlightText(am.text, am.$dom);
             var scrollTarget = $highlighted || am.$dom;
             scrollTarget.scrollIntoView();
@@ -203,7 +203,7 @@
 
                 var item = {node: textNode};
                 item.offset = i == startNodeIdx ? offset : 0;
-                item.length = i == endNodeIdx ? text.length - (lenSum - offset) : textNode.innerText().length;
+                item.length = i == endNodeIdx ? text.length - (lenSum - offset - 1) : textNode.innerText().length;
 
                 result.push(item);
                 lenSum += item.length;
@@ -341,6 +341,8 @@
                             elem[key] = func;
                         }
                     }
+
+                    elem[0] = elem; // for compatiblility with jQuery $() arrays
                     return elem;
                 };
 
