@@ -79,10 +79,7 @@ If it's present, it'll take the user to the appropriate page fragment.
 
 ## Current state
 
-The project is quite experimental at this point. There are few issues that remain to be addressed, such as:
-
-* Making it possible to refer to elements other than simple text phrases: headings, images, tables, etc.
-* Improving the highlight on matched elements (making it less intrusive and more fitting with surrounding CSS)
-* Working on cross-browser compatiblity while preserving the lack of external dependencies
+The project is in alpha state as of now. It seems to work in general but of course there are
+still some issues to be addressed and features to be implemented.
 
 If you like the idea of _Refrag_ and how it could improve the Web, don't hesitate to contribute :)
