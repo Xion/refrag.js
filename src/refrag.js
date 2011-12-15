@@ -299,185 +299,217 @@
 
         return res;
     };
-})(
-
-    /** Our own little jQuery **/
-
-    // This our own implementation of something that resembles jQuery, but provides only
-    // extremely basic functionality. Most notably, $('selector') returns only first match
-    // as (almost) normal DOM object, and works only as delegate to getElementById/querySelector.
-    // That is, a $('foo') object is **NOT** an array!
+})( 
     (function() {
-        var $ = function(arg) {
-        
-            var queryDom = function(selector) {
-                if (selector[0] == '#') {
-                    var elemId = selector.substring(1);
-                    var elem = document.getElementById(elemId);
-                    if (!elem)  return null;
-                    return wrapDomElement(elem);
-                }
 
-                if (document.querySelector)
-                    return wrapDomElement(document.querySelector(selector));
+        /** Our own little jQuery **/
 
-                return null;
-            };
-            var createDom = function(desc) {
-                desc = desc.substr(1, desc.length - 2);
-                if (desc[desc.length - 1] == '/')
-                    desc = desc.substr(0, desc.length - 1);
-
-                var elem = document.createElement(desc);
-                return wrapDomElement(elem);
-            };
-
-            var wrapDomElement = function(elem) {
-                // add functions from $.fn
-                for (var key in $.fn) {
-                    if ($.fn.hasOwnProperty(key) && typeof elem[key] === 'undefined') {
-                        var func = $.fn[key];
-                        elem[key] = func;
-                    }
-                }
-                return elem;
-            };
-
-            var addReadyHandler = function(func) {
-                if (window.addEventListener)
-                    return window.addEventListener('load', func);
-                else {
-                    window.onload = func;
-                    return true;
-                }
-            };
-
-            if (typeof arg === 'string') {
-                arg = arg.trim();
-                if (arg[0] == '<' && arg[arg.length - 1] == '>')
-                    return createDom(arg);
-                return queryDom(arg);
-            }
-            if (typeof arg === 'function') {
-                return addReadyHandler(arg);
-            }
-            return wrapDomElement(arg);
-        };
-
-        $.fn = (function() {
-            // additional functions, bound to objects returned by $()
-
-            var cssStyleToCamelCase = function(style) {
-                /** Utility functions used by .css(). */
-                var styleNameParts = style.split('-');
-                for (var i = 0; i < styleNameParts.length; ++i) {
-                    var firstLetter = styleNameParts[i].substring(0, 1)
-                    firstLetter = firstLetter[i > 0 ? 'toUpperCase' : 'toLowerCase']();
-                    styleNameParts[i] = firstLetter + styleNameParts[i].substring(1);
-                }
-                return styleNameParts.join('');
-            };
+        // This our own implementation of something that resembles jQuery, but provides only
+        // extremely basic functionality. Most notably, $('selector') returns only first match
+        // as (almost) normal DOM object, and works only as delegate to getElementById/querySelector.
+        // That is, a $('foo') object is **NOT** an array!
+        var my$ = (function() {
+            var $ = function(arg) {
             
-            return {
-                on: function(eventName, handler) {
-                    eventName = eventName.toLowerCase();
-                    if (this.addEventListener)
-                        this.addEventListener(eventName, handler);
-                    else
-                        this['on' + eventName] = handler;
-                    return this;
-                },
-
-                isText: function() { return this.nodeType == 3; },
-
-                parent: function() { return $(this.parentNode); },
-                contents: function() { return this.childNodes },
-
-                html: function(arg) {
-                    if (typeof arg !== 'undefined') {
-                        this.innerHTML = arg;
-                        return this;
+                var queryDom = function(selector) {
+                    if (selector[0] == '#') {
+                        var elemId = selector.substring(1);
+                        var elem = document.getElementById(elemId);
+                        if (!elem)  return null;
+                        return wrapDomElement(elem);
                     }
-                    return this.innerHTML;
-                },
 
-                innerText: function() { // text() would conflict with body.text
-                    if (this.isText())  return this.nodeValue;
+                    if (document.querySelector)
+                        return wrapDomElement(document.querySelector(selector));
 
-                    var res = "";
-                    var children = this.childNodes;
-                    $.each(children, function() {
-                        res += $(this).innerText();
-                    });
-                    return res;
-                },
+                    return null;
+                };
+                var createDom = function(desc) {
+                    desc = desc.substr(1, desc.length - 2);
+                    if (desc[desc.length - 1] == '/')
+                        desc = desc.substr(0, desc.length - 1);
 
-                css: function(style, value) {
-                    style = cssStyleToCamelCase(style);
-                    if (typeof value !== 'undefined') {
-                        this.style[style] = value;
-                        return this;
+                    var elem = document.createElement(desc);
+                    return wrapDomElement(elem);
+                };
+
+                var wrapDomElement = function(elem) {
+                    // add functions from $.fn
+                    for (var key in $.fn) {
+                        if ($.fn.hasOwnProperty(key) && typeof elem[key] === 'undefined') {
+                            var func = $.fn[key];
+                            elem[key] = func;
+                        }
                     }
-                    
-                    var inlineStyle = this.style[style];
-                    if (typeof inlineStyle !== 'undefined')
-                        return inlineStyle;
+                    return elem;
+                };
 
-                    if (this.currentStyle)
-                        return this.currentStyle[style];    // IE
-                    else if (window.getComputedStyle) {
-                        var elemStyle = document.defaultView.getComputedStyle(this, null);
-                        return elemStyle.getPropertyValue(style);
+                var addReadyHandler = function(func) {
+                    if (window.addEventListener)
+                        return window.addEventListener('load', func);
+                    else {
+                        window.onload = func;
+                        return true;
                     }
-                },
+                };
 
-                offset: function() {
-                    var left = top = 0;
-                    if (obj.offsetParent) {
-                        var obj = this;
-                        do {
-                            left += obj.offsetLeft;
-                            top += obj.offsetTop;
-                        } while ( (obj = obj.offsetParent) );
-                    }
-                    return {left: left, top: top};
-                },
-
-                scrollIntoView: function(how) {
-                    /** Adds scrollIntoView() for DOM elements tha don't support it natively,
-                        most notably text nodes, */
-                    var obj  = this;
-                    while (obj && obj.nodeType != 1)    // 1 is HTML <element/>
-                        obj = obj.previousSibling;
-                    obj = obj || this.parentNode;
-                    if (obj)    $(obj).scrollIntoView(how);
-                },
-
-                append: function(node) {
-                    this.appendChild(node);
-                    return this;
-                },
-
-                replaceWith: function(node) {
-                    var parent = this.parentNode;
-                    parent.insertBefore(node, this);
-                    parent.removeChild(this);
-                    return this;
-                },
+                if (typeof arg === 'string') {
+                    arg = arg.trim();
+                    if (arg[0] == '<' && arg[arg.length - 1] == '>')
+                        return createDom(arg);
+                    return queryDom(arg);
+                }
+                if (typeof arg === 'function') {
+                    return addReadyHandler(arg);
+                }
+                return wrapDomElement(arg);
             };
+
+            $.fn = (function() {
+                // additional functions, bound to objects returned by $()
+
+                var cssStyleToCamelCase = function(style) {
+                    /** Utility functions used by .css(). */
+                    var styleNameParts = style.split('-');
+                    for (var i = 0; i < styleNameParts.length; ++i) {
+                        var firstLetter = styleNameParts[i].substring(0, 1)
+                        firstLetter = firstLetter[i > 0 ? 'toUpperCase' : 'toLowerCase']();
+                        styleNameParts[i] = firstLetter + styleNameParts[i].substring(1);
+                    }
+                    return styleNameParts.join('');
+                };
+                
+                return {
+                    on: function(eventName, handler) {
+                        eventName = eventName.toLowerCase();
+                        if (this.addEventListener)
+                            this.addEventListener(eventName, handler);
+                        else
+                            this['on' + eventName] = handler;
+                        return this;
+                    },
+
+                    isText: function() { return this.nodeType == 3; },
+
+                    parent: function() { return $(this.parentNode); },
+                    contents: function() { return this.childNodes },
+
+                    html: function(arg) {
+                        if (typeof arg !== 'undefined') {
+                            this.innerHTML = arg;
+                            return this;
+                        }
+                        return this.innerHTML;
+                    },
+
+                    innerText: function() { // text() would conflict with body.text
+                        if (this.isText())  return this.nodeValue;
+
+                        var res = "";
+                        var children = this.childNodes;
+                        $.each(children, function() {
+                            res += $(this).innerText();
+                        });
+                        return res;
+                    },
+
+                    css: function(style, value) {
+                        style = cssStyleToCamelCase(style);
+                        if (typeof value !== 'undefined') {
+                            this.style[style] = value;
+                            return this;
+                        }
+                        
+                        var inlineStyle = this.style[style];
+                        if (typeof inlineStyle !== 'undefined')
+                            return inlineStyle;
+
+                        if (this.currentStyle)
+                            return this.currentStyle[style];    // IE
+                        else if (window.getComputedStyle) {
+                            var elemStyle = document.defaultView.getComputedStyle(this, null);
+                            return elemStyle.getPropertyValue(style);
+                        }
+                    },
+
+                    offset: function() {
+                        var left = top = 0;
+                        if (obj.offsetParent) {
+                            var obj = this;
+                            do {
+                                left += obj.offsetLeft;
+                                top += obj.offsetTop;
+                            } while ( (obj = obj.offsetParent) );
+                        }
+                        return {left: left, top: top};
+                    },
+
+                    scrollIntoView: function(how) {
+                        /** Adds scrollIntoView() for DOM elements tha don't support it natively,
+                            most notably text nodes, */
+                        var obj  = this;
+                        while (obj && obj.nodeType != 1)    // 1 is HTML <element/>
+                            obj = obj.previousSibling;
+                        obj = obj || this.parentNode;
+                        if (obj)    $(obj).scrollIntoView(how);
+                    },
+
+                    append: function(node) {
+                        this.appendChild(node);
+                        return this;
+                    },
+
+                    replaceWith: function(node) {
+                        var parent = this.parentNode;
+                        parent.insertBefore(node, this);
+                        parent.removeChild(this);
+                        return this;
+                    },
+                };
+            })();
+
+            $.each = function(seq, func) {
+                for (var idx in seq) {
+                    if (seq.hasOwnProperty(idx)) {
+                        var elem = seq[idx];
+                        var shallContinue = func.apply(elem, [idx, elem, seq]);
+                        if (shallContinue === false)    // only explicit 'return false' counts as break
+                            break;
+                    }
+                }
+            };
+
+            return $;
         })();
 
-        $.each = function(seq, func) {
-            for (var idx in seq) {
-                if (seq.hasOwnProperty(idx)) {
-                    var elem = seq[idx];
-                    var shallContinue = func.apply(elem, [idx, elem, seq]);
-                    if (shallContinue === false)    // only explicit 'return false' counts as break
-                        break;
-                }
-            }
-        };
+        /** Use actual jQuery (if available) or a replacement library **/
+        var jQuery = window['jQuery'];
+        if (jQuery) {
 
-        return $;
+            // extend original jQuery with some custom features
+            // from our replacement
+            return (function($) {
+
+                var fnNames = ['isText', 'innerText', 'scrollIntoView'];
+                var fn = {};
+                for (var i in fnNames) {
+                    var fnName = fnNames[i];
+                    fn[fnName] = (function(func) {
+                        return function() {
+                            var $this = this;
+                            if ($this.length > 0) {
+                                var my$this = my$($this[0]);
+                                return my$this[func].apply(my$this, arguments);
+                            }
+                        };
+                    })(fnName);
+                }
+                
+                $.extend($.fn, fn);
+                return $;
+            })(jQuery);
+        }
+
+        return my$; // fallback to replacement
     })()
 );
