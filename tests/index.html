@@ -17,19 +17,20 @@
             }
         </style>
 
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
         <script src="../src/refrag.js"></script>
         <script type="text/javascript">
-                window.onload = function() {
-                    var phrase = document.getElementById('phrase');
-                    phrase.value = window.location.hash.substr(2);
+            window.onload = function() {
+                var phrase = document.getElementById('phrase');
+                phrase.value = window.location.hash.substr(2);
 
-                    var testBtn = document.getElementById('testButton');
-                    testBtn.addEventListener('click', function() {
-                        // add dummy parameter to force reloading of page
-                        var dummy = "dummy=" + Math.random();
-                        window.location.href = "?" + dummy + "#^" + phrase.value;
-                    });
-                };
+                var testBtn = document.getElementById('testButton');
+                testBtn.addEventListener('click', function() {
+                    // add dummy parameter to force reloading of page
+                    var dummy = "dummy=" + Math.random();
+                    window.location.href = "?" + dummy + "#^" + phrase.value;
+                });
+            };
         </script>
     </head>
     <body>
