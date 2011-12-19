@@ -44,6 +44,27 @@ As in example above, it can be just a text occurring somewhere on the website. T
 in a browser should result in loading the desired page and scrolling down to the first occurrence
 of specified text.
 
+### Specific tags
+
+It is also possible to specify a tag where we'd like the text to be found. This is especially useful
+when refering to headings, which usually are enclosed within the <code>h1</code> or <code>h2</code>
+elements (or <code>h3</code>, etc.).
+
+To do that, a name of HTML tag should be put at the beginning of "hashbang", and another caret
+(<code>^</code>) sign shall separate it from the rest of the text. The full URL might therefore
+look like this:
+
+    http://www.example.com/article/523#^h2^A header
+    
+### Escaping the caret
+
+In the rare cases when the caret sign itself is part of matched text, it is possible to
+escape it - just use two carets:
+
+    http://www.example.com/article/523#^code^e^^(pi*i)+1=0
+    
+This URL would match the text _e^(pi*i)+1=0_ inside a <code>code</code> element.
+
 ## How does it work?
 
 _refrag.js_ implements the mechanism described above as a drop-in JS script. The script can be
@@ -58,10 +79,7 @@ If it's present, it'll take the user to the appropriate page fragment.
 
 ## Current state
 
-The project is quite experimental at this point. There are few issues that remain to be addressed, such as:
-
-* Making it possible to refer to elements other than simple text phrases: headings, images, tables, etc.
-* Improving the highlight on matched elements (making it less intrusive and more fitting with surrounding CSS)
-* Working on cross-browser compatiblity while preserving the lack of external dependencies
+The project is in alpha state as of now. It seems to work in general but of course there are
+still some issues to be addressed and features to be implemented.
 
 If you like the idea of _Refrag_ and how it could improve the Web, don't hesitate to contribute :)
