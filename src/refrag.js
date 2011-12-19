@@ -234,7 +234,17 @@
 
         var performHighlighting = function($elem) {
             /** Adds highlighting to single element. */
-            $elem.css('background-color', '#ffffbb');
+            var color = $elem.css('color');
+            var bkgColor = $elem.css('background-color');
+
+            if (color && bkgColor) {
+                bkgColor = bkgColor == 'transparent' ? 'white' : bkgColor;
+                $elem.css('color', bkgColor);
+                $elem.css('background-color', color);
+            }
+            else {
+                $elem.css('background-color', '#ffffbb');
+            }
         };
     
         /** Actual highlighting function. */
