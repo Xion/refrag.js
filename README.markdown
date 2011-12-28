@@ -71,7 +71,7 @@ _refrag.js_ implements the mechanism described above as a drop-in JS script. The
 painlessly included within a website, making it a potential target for <code>#^</code> links:
 
 ```html
-<script type="text/javascript" src="refrag.js"></script>
+<script type="text/javascript" src="http://git.io/refrag.min.js"></script>
 ```
 When the page is loaded, _refrag.js_ will inspect the URL and search for a hash-caret sequence.
 If it's present, it'll take the user to the appropriate page fragment.
@@ -79,7 +79,7 @@ If it's present, it'll take the user to the appropriate page fragment.
 
 ## Current state
 
-The project is in alpha state as of now. It seems to work in general but of course there are
-still some issues to be addressed and features to be implemented.
+The project is in beta state as of now.
+There are still some issues to be addressed and features to be implemented.
 
 If you like the idea of _Refrag_ and how it could improve the Web, don't hesitate to contribute :)
