@@ -7,8 +7,8 @@ Breathing new life into URL hash fragments
 _Refrag_ strives to reinvent a somehow forgotten idea of **fragment identifiers**
 (URL parts after hash <code>#</code>) as references to portions of HTML documents.
 
-A traditional approach is to define an _anchor_ in a form of <code><a></code> tag,
-e.g. <code><a name="foo"></code>. This would enable <code>#foo</code> to be used
+A traditional approach is to define an _anchor_ in a form of <code>\<a\></code> tag,
+e.g. <code>\<a name="foo"\></code>. This would enable <code>#foo</code> to be used
 as fragment identifier. As a result, an URL such as <code>http://www.example.com/#foo</code>
 would refer to a place in <code>example.com</code> webpage where the anchor was defined.
 
