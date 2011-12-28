@@ -37,19 +37,37 @@
 
 			<h2>So, what happened?</h2>
 			<p>On the target side, supporting fragment identifiers was cumbersome. It required placement of
-			<em>anchors</em> - such as <code>&lt;a name="foo"/&gt;</code> - for the fragments we wanted to have links to.
+			<em>anchors</em> - such as <code>&lt;a name="foo"/&gt;</code> - for fragments we wanted links to.
 			That was an additional effort which was often non-trivial.</p>
-			<p>But even if author undertook this effort, results were hardly impressive. You could still only
+			<p>But even if the author undertook this effort, results were hardly impressive. You could still only
 			link to fragments that had anchors placed - usually headers or sections. What if you wanted more granularity, like
 			paragraphs or sentences?...</p>
 			<p>If the anchor wasn't there - well, tough luck.</p>
 
 			<h2>Reviving the hash</h2>
 			<p>It's no wonder that the original idea of URL hash fragments has mostly died out. But it doesn't mean
-			we no longer need linking to portions of websites. Quite the opposite. And the more articles or blogposts
-			are getting published on the Web, the more nagging this need becomes.</p>
+			we no longer need linking to portions of websites. Quite the opposite, actually. As more and more articles and blogposts
+			are getting published on the Web, this need becomes even more nagging.</p>
 
-			<p>It's a problem - but a one that can be solved. Enter the <em>Refrag</em> project. </p>
+			<p>It's a problem, but a one that can and should be solved.</p>
+			<p>Hence, the <em>Refrag</em> project.</p>
+
+			<h2>The idea</h2>
+			<p><em>Refrag</em> gets away with the idea of explicit anchors. Instead, it utilizes existing content of page:
+			markup and text. Since this wealth of information and structure is already there, the only thing missing is
+			some way of referring to it.<br/>
+			For that, <em>Refrag</em> uses a special form of fragment identifier: one that starts with caret sign
+			(<code>^</code>) right after the hash (<code>#</code>). This results in URL similar to:</p>
+			<code>http://www.example.com/article/456#^text%20within%20article</code>
+			<p>The text after <code>#^</code> hashbang is a content locator, pointing to a fragment of document.
+			In this example, it can be just a text occurring somewhere on the page. Typing such URL in a browser
+			should result in loading the desired page and scrolling down to the first occurrence of specified text.</p>
+
+			<h2>How does it work?</h2>
+			<p><em>refrag.js</em> implements this mechanism as a drop-in JS script. The script can be painlessly included within a website, making it a potential target for <code>#^</code> links:</p>
+			<code>&lt;script type="text/javascript" src="refrag.min.js">&lt;/script></code>
+			<p>When the page is loaded, <em>refrag.js</em> will inspect the URL and search for a hash-caret sequence.
+			If it's present, it'll take the user to the appropriate page fragment.</p>
 		</div>
 	</body>
 </html>

@@ -26,6 +26,7 @@ a:hover {
 }
 
 h1, h2, h3, h4, h5, h6 {
+	color: darken(@headerColor, 15);
 	&:before {
 		color: @headerColor;
 		content: "#^ ";
@@ -55,7 +56,7 @@ div#page {
 		margin-bottom: 40px;
 
 		#title {
-			#font .serif(normal, 80px, 84px);
+			#font .serif(normal, 88px, 90px);
 			color: @headerColor;
 		}
 		#slogan {
@@ -72,9 +73,20 @@ div#page {
 		}
 	}
 
-	.code {
+	code {
+		display: inline;
+		#font .monospace(normal, 0.8em, 1em);
 		span.indent {
 			padding-left: 2em;
 		}
+	}
+	& > code {
+		display: block;
+		white-space: pre-line;
+		padding: 10px 20px;
+		margin: 10px -20px;
+		padding-left: 50px;
+		.border-radius(3px);
+		border: 1px dashed @headerColor;
 	}
 }
