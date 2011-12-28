@@ -2,11 +2,11 @@
 <html>
 	<head>
 		<title>refrag.js :: breathing new life into URL hashes</title>
+
 		<link rel="stylesheet/less" type="text/css" href="css/style.less"/>
-
 		<script type="text/javascript" src="js/less-1.1.5.min.js"></script>
+		
 		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-
 		<script type="text/javascript">
 			// replacing &tab; "entity refs" with <span> that simulates indentation
 			$(document).ready(function() {
@@ -16,7 +16,20 @@
 				});
 			});
 		</script>
+
 		<script type="text/javascript" src="http://git.io/refrag.min.js"></script>
+
+		<script type="text/javascript">
+		  var _gaq = _gaq || [];
+		  _gaq.push(['_setAccount', 'UA-27981952-1']);
+		  _gaq.push(['_trackPageview']);
+
+		  (function() {
+		    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		  })();
+		</script>
 	</head>
 	<body>
 		<a href="http://github.com/Xion/refrag.js">
@@ -57,8 +70,9 @@
 			<p><em>Refrag</em> gets away with the idea of explicit anchors. Instead, it utilizes existing content of page:
 			markup and text. Since this wealth of information and structure is already there, the only thing missing is
 			some way of referring to it.<br/>
-			For that, <em>Refrag</em> uses a special form of fragment identifier: one that starts with caret sign
-			(<code>^</code>) right after the hash (<code>#</code>). This results in URL similar to:</p>
+			For that, <em>Refrag</em> uses a special form of fragment identifier: one that starts with
+			<strong>caret sign</strong> (<code>^</code>) right after the hash (<code>#</code>).
+			This results in URL similar to:</p>
 			<code>http://www.example.com/article/456#^text%20within%20article</code>
 			<p>The text after <code>#^</code> hashbang is a content locator, pointing to a fragment of document.
 			In this example, it can be just a text occurring somewhere on the page. Typing such URL in a browser
@@ -79,7 +93,7 @@
 			<p>In any case, check out the <a href="https://github.com/Xion/refrag.js">project's page</a>
 			on <a href="http://github.com">GitHub</a>.</p>
 			<p>Oh, most importantly: <strong>spread the word</strong>! The more sites become <em>Refrag</em>-enabled,
-			the sooner we can have precise, flexible and powerful links again.</p>
+			the sooner we can have precise, flexible and powerful links on the Web again.</p>
 
 			<footer>
 			made by Xion ::
