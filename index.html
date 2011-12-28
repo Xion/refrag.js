@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>refrag.js :: breathing new life into URL hashes</title>
+		<link rel="stylesheet/less" type="text/css" href="css/style.less"/>
+
+		<script type="text/javascript" src="js/less-1.1.5.min.js"></script>
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+
+		<script type="text/javascript">
+			// replacing &tab; "entity refs" with <span> that simulates indentation
+			$(document).ready(function() {
+				$('div#page > code').each(function() {
+					var $this = $(this);
+					$this.html($this.html().replace(/&amp;tab;/g, "<span class='indent'></span>"));
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<a href="http://github.com/Xion/refrag.js">
+			<img id="github_corner" alt="Fork me on GitHub" src="img/github-forkme-corner.png"/>
+		</a>
+		<header>
+			<div id="title">refrag.js</div>
+			<div id="slogan">breathing new life into URL hashes</div>
+
+		</header>
+	</body>
+</html>
