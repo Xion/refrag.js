@@ -21,10 +21,27 @@
 		<a href="http://github.com/Xion/refrag.js">
 			<img id="github_corner" alt="Fork me on GitHub" src="img/github-forkme-corner.png"/>
 		</a>
-		<header>
-			<div id="title">refrag.js</div>
-			<div id="slogan">breathing new life into URL hashes</div>
 
-		</header>
+		<div id="page">
+			<header>
+				<div id="title">refrag.js</div>
+				<div id="slogan">breathing new life into URL hashes</div>
+			</header>
+
+			<p>Do you remember why the <strong>hash sign</strong> (<code>#</code>) was being put into URLs?...</p>
+			<p>No, it wasn't "<a href="http://www.w3.org/QA/2011/05/hash_uris.html">because of AJAX</a>".<br/>
+			Not for <a href="http://www.google.com/analytics">Google Analytics</a> either.</p>
+			<p>Hash was followed by a <em>fragment identifier</em>. It referred to <strong>portion</strong> of document.<br/>
+			If you opened the URL, you were taken directly to this portion.</p>
+			<p>No scrolling, no searching. Right to the point.</p>
+
+			<h2>So, what happened?</h2>
+			<p>On the target side, supporting fragment identifiers was cumbersome. It required placement of
+			<em>anchors</em> - such as <code>&lt;a name="foo"/&gt;</code> - for the fragments we wanted to have links to.
+			That was an additional effort which was often non-trivial.</p>
+			<p>But even if author undertook this effort, results were hardly impressive. You could still only
+			link to fragments that had anchors placed - usually headers or sections. What if you wanted more granularity, like
+			paragraphs or sentences?... If the anchor wasn't there - well, tough luck.</p>
+		</div>
 	</body>
 </html>

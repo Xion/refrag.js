@@ -7,13 +7,34 @@
 
 @import "bootstrap.less";
 
+@headerColor: #007200;
+
 
 body {
 	margin: 0;
-	#font .serif(normal, 13pt, 15pt);
-	background-color: #feffe5;
+	background-color: #ffeeac;
 	color: #1e2329
 }
+
+a {
+	color: #40a240;
+	text-decoration: none;
+}
+a:hover {
+	color: 439c12;
+	text-decoration: underline;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	&:before {
+		color: @headerColor;
+		content: "#^ ";
+	}
+}
+h2 {
+	#font .serif(normal, 33px, 40px);
+}
+
 
 img#github_corner {
 	position: fixed;
@@ -24,26 +45,36 @@ img#github_corner {
 }
 
 
-body > header {
-	width: 100%;
-	height: 200px;
-	background-color: #feffb5;
-	.box-shadow(0 3px 1em rgba(0, 0, 0, 0.25));
-
-	#title {
-		margin-left: 30px;
-		#font .serif(normal, 80px, 80px);
-	}
-
-	#slogan {
-		float: right;
-		margin-right: 10px;
-		margin-top: 50px;
-		#font .serif(normal, 40px, 50px);
-	}
-}
-
 div#page {
 	width: 800px;
 	margin: 20px auto;
+	#font .serif(normal, 22px, 24px);
+
+	header {
+		width: 100%;
+		margin-bottom: 40px;
+
+		#title {
+			#font .serif(normal, 80px, 84px);
+			color: @headerColor;
+		}
+		#slogan {
+			#font .serif(normal, 36px, 40px);
+			color: #40a240;
+		}
+		&:before {
+			display: block;
+			content: "#^";
+			float: right;
+			margin-right: 20px;
+			#font .serif(bold, 136px, 140px);
+			color: #007200;
+		}
+	}
+
+	.code {
+		span.indent {
+			padding-left: 2em;
+		}
+	}
 }
