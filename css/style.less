@@ -17,12 +17,11 @@ body {
 }
 
 a {
-	color: #40a240;
+	color: @headerColor;
 	text-decoration: none;
 }
 a:hover {
-	color: 439c12;
-	text-decoration: underline;
+	color: #40a240;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -58,10 +57,12 @@ div#page {
 		#title {
 			#font .serif(normal, 88px, 90px);
 			color: @headerColor;
+			text-shadow: 0 1px 1px #40a240;
 		}
 		#slogan {
 			#font .serif(normal, 36px, 40px);
 			color: #40a240;
+			text-shadow: 0 1px 1px ligthen(#40a240, 5);
 		}
 		&:before {
 			display: block;
@@ -69,7 +70,8 @@ div#page {
 			float: right;
 			margin-right: 20px;
 			#font .serif(bold, 136px, 140px);
-			color: #007200;
+			color: @headerColor;
+			text-shadow: 0 1px 1px #40a240;
 		}
 	}
 
@@ -88,5 +90,12 @@ div#page {
 		padding-left: 50px;
 		.border-radius(3px);
 		border: 1px dashed @headerColor;
+	}
+
+	footer {
+		margin-top: 30px;
+		text-align: right;
+		font-size: small;
+		color: #7e8389;
 	}
 }

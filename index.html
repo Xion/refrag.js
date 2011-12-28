@@ -16,6 +16,7 @@
 				});
 			});
 		</script>
+		<script type="text/javascript" src="http://git.io/refrag.min.js"></script>
 	</head>
 	<body>
 		<a href="http://github.com/Xion/refrag.js">
@@ -64,10 +65,28 @@
 			should result in loading the desired page and scrolling down to the first occurrence of specified text.</p>
 
 			<h2>How does it work?</h2>
-			<p><em>refrag.js</em> implements this mechanism as a drop-in JS script. The script can be painlessly included within a website, making it a potential target for <code>#^</code> links:</p>
-			<code>&lt;script type="text/javascript" src="refrag.min.js">&lt;/script></code>
+			<p><em>refrag.js</em> implements this mechanism as a drop-in JS script, with <strong>no dependencies</strong>.
+			The script can be painlessly included within a website, making it a potential target for <code>#^</code> links:</p>
+			<code>&lt;script type="text/javascript" src="http://git.io/refrag.min.js">&lt;/script></code>
 			<p>When the page is loaded, <em>refrag.js</em> will inspect the URL and search for a hash-caret sequence.
 			If it's present, it'll take the user to the appropriate page fragment.</p>
+			<p>That's it. No anchors needed!</p>
+
+			<h2>Get it &amp; spread the word!</h2>
+			<p>As you can see, including <em>refrag.js</em> is dead simple.<br/>
+			But if you wish, you can also <a href="https://github.com/Xion/refrag.js/zipball/master">download it</a>
+			and use a hosted version.</p>
+			<p>In any case, check out the <a href="https://github.com/Xion/refrag.js">project's page</a>
+			on <a href="http://github.com">GitHub</a>.</p>
+			<p>Oh, most importantly: <strong>spread the word</strong>! The more sites become <em>Refrag</em>-enabled,
+			the sooner we can have precise, flexible and powerful links again.</p>
+
+			<footer>
+			made by Xion ::
+				<a href="http://github.com/Xion">github</a> &raquo;
+				<a href="http://twitter.com/Xion__">twitter</a> &raquo;
+				<a href="http://xionlog.com">blog</a>
+			</footer>
 		</div>
 	</body>
 </html>
