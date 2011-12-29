@@ -7,12 +7,13 @@
 
 @import "bootstrap.less";
 
+@bkgColor: #ffeeac;
 @headerColor: #007200;
 
 
 body {
 	margin: 0;
-	background-color: #ffeeac;
+	background-color: @bkgColor;
 	color: #1e2329
 }
 
@@ -26,6 +27,7 @@ a:hover {
 
 h1, h2, h3, h4, h5, h6 {
 	color: darken(@headerColor, 15);
+	text-shadow: 0 1px 1px darken(@bkgColor, 10);
 	&:before {
 		color: @headerColor;
 		content: "#^ ";
@@ -62,7 +64,7 @@ div#page {
 		#slogan {
 			#font .serif(normal, 36px, 40px);
 			color: #40a240;
-			text-shadow: 0 1px 1px ligthen(#40a240, 5);
+			
 		}
 		&:before {
 			display: block;
@@ -71,7 +73,7 @@ div#page {
 			margin-right: 20px;
 			#font .serif(bold, 136px, 140px);
 			color: @headerColor;
-			text-shadow: 0 1px 1px #40a240;
+			text-shadow: 0 3px 3px #40a240;
 		}
 	}
 
@@ -85,11 +87,13 @@ div#page {
 	& > code {
 		display: block;
 		white-space: pre-line;
-		padding: 10px 20px;
-		margin: 10px -20px;
-		padding-left: 50px;
-		.border-radius(3px);
-		border: 1px dashed @headerColor;
+		padding: 10px 0;
+		margin: 10px -10px;
+		padding-left: 40px;
+		background-color: darken(@bkgColor, 3);
+		.border-radius(5px);
+		border: 1px solid @headerColor;
+		.box-shadow(0 1px 1px 1px darken(@headerColor, 10));
 	}
 
 	footer {
