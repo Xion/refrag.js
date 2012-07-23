@@ -86,7 +86,7 @@
                     if ($match) return false;
 
                     var $this = $(this);
-                    var elemText = sanitizeText($this.innerText());
+                    var elemText = sanitizeText($this.textInside());
 
                     // take care of whitespace at the boundary between
                     // current text and new element
@@ -162,8 +162,8 @@
                         - offset - Offset inside text node where the matching fragment of text starts
                                    (can be >0 only for first item)
                         - length - Length of matching fragment of text that lies inside the node
-                                   (can be <node.innerText().length only for last item) */
-            var elemText = $elem.innerText();
+                                   (can be <node.textInside().length only for last item) */
+            var elemText = $elem.textInside();
             var elemTextNodes = findTextNodes($elem);
             var offset = fuzzyIndexOf(elemText, text);
 
@@ -173,7 +173,7 @@
 
             // find the start node
             for (var i = 0; i < elemTextNodes.length; ++i) {
-                var nodeText = elemTextNodes[i].innerText();
+                var nodeText = elemTextNodes[i].textInside();
                 lenSum += nodeText.length;
                 if (lenSum >= offset) {
                     startNodeIdx = i;
@@ -187,7 +187,7 @@
             // find the end node
             if (endNodeIdx < 0) 
                 for (var i = startNodeIdx + 1; i < elemTextNodes.length; ++i) {
-                    var nodeText = elemTextNodes[i].innerText();
+                    var nodeText = elemTextNodes[i].textInside();
                     lenSum += nodeText.length;
                     if (lenSum >= offset + text.length) {
                         endNodeIdx = i;
@@ -203,7 +203,7 @@
 
                 var item = {node: textNode};
                 item.offset = i == startNodeIdx ? offset : 0;
-                item.length = i == endNodeIdx ? text.length - (lenSum - offset - 1) : textNode.innerText().length;
+                item.length = i == endNodeIdx ? text.length - (lenSum - offset - 1) : textNode.textInside().length;
 
                 result.push(item);
                 lenSum += item.length;
@@ -218,7 +218,7 @@
                 of the text inside node will form new text nodes.  */
             elemName = elemName || 'span';
             
-            var nodeText = $node.innerText();
+            var nodeText = $node.textInside();
             var text = nodeText.substring(start, end);
 
             var $textBefore = $(document.createTextNode(nodeText.substring(0, start)));
@@ -257,7 +257,7 @@
             
             var textNodes;
             if ($elem.isText()) {
-                var offset = fuzzyIndexOf($elem.innerText(), text);
+                var offset = fuzzyIndexOf($elem.textInside(), text);
                 var item = {node: $elem, offset: offset, length: text.length};
                 textNodes = [item];
             }
@@ -414,13 +414,14 @@
                         return this.innerHTML;
                     },
 
-                    innerText: function() { // text() would conflict with body.text
-                        if (this.isText())  return this.nodeValue;
+                    textInside: function() { // text() would conflict with body.text
+                        if (this.isText())
+                            return this.nodeValue;
 
                         var res = "";
                         var children = this.childNodes;
                         $.each(children, function() {
-                            res += $(this).innerText();
+                            res += $(this).textInside();
                         });
                         return res;
                     },
@@ -502,7 +503,7 @@
             // from our replacement
             return (function($) {
 
-                var fnNames = ['isText', 'innerText', 'scrollIntoView'];
+                var fnNames = ['isText', 'textInside', 'scrollIntoView'];
                 var fn = {};
                 for (var i in fnNames) {
                     var fnName = fnNames[i];
